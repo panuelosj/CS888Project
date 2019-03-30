@@ -19,6 +19,10 @@ public:
   Vector2d particleToReferencespace(unsigned int p);
   Vector2i particleToGridIndex(unsigned int p);
   Vector2d particleVelocity(unsigned int p);
+  // DATA WRITES
+  void setParticleVelocity(unsigned int p, Vector2d newVelocity);
+  // PRINTS
+  void printParticleVelocities();
 
 private:
   void _seedParticles();                    // seeds 2x2 particles per fluid grid cell

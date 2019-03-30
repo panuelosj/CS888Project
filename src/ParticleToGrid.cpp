@@ -1,4 +1,5 @@
 #include "ParticleToGrid.h"
+#include <iostream>
 
 //  ######   #######  ##    ##  ######  ######## ########
 // ##    ## ##     ## ###   ## ##    ##    ##    ##     ##
@@ -41,6 +42,10 @@ void ParticleToGrid::transfer() {
   // first reset the velocity field
   _velocityField->clear();
 
+  // we need a duplicate staggered grid to keep a running track of the sum of
+  // all weights to divide by at the end
+  _weights = new MACgridVelocity( _gridSize, _gridSpacing );
+
   // now accumulate particle data into the velocity field
   _accumulate();
 
@@ -66,10 +71,6 @@ void ParticleToGrid::transfer() {
 // ##        ##     ## ####    ###    ##     ##    ##    ########
 
 void ParticleToGrid::_accumulate() {
-  // we need a duplicate staggered grid to keep a running track of the sum of
-  // all weights to divide by at the end
-  _weights = new MACgridVelocity( _gridSize, _gridSpacing );
-
   // now do a summation for every particle
   for (unsigned int idx=0; idx<_particles->nParticles(); idx++) {
     // need the particle's worldspace position

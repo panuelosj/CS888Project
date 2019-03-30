@@ -82,7 +82,10 @@ void Sim::_update() {
 
   _updatePressureField();
 
-  //_gridToParticleTransfer();
+  _gridToParticleTransfer();
+
+  std::cout << "NewParticleVelocities: " << std::endl;
+  _particles->printParticleVelocities();
 }
 
 void Sim::_particleToGridTransfer() {
@@ -160,10 +163,10 @@ void Sim::_setupParticleToGridInputs() {
 }
 
 void Sim::_setupGridToParticleInputs() {
-  _particleToGridInputs.gridSize              = _gridSize;
-  _particleToGridInputs.gridSpacing           = _gridSpacing;
-  _particleToGridInputs.velocityField         = _velocityField;
-  _particleToGridInputs.velocityFieldOld      = _velocityFieldOld;
-  _particleToGridInputs.materialField         = _materialField;
-  _particleToGridInputs.particles             = _particles;
+  _gridToParticleInputs.gridSize              = _gridSize;
+  _gridToParticleInputs.gridSpacing           = _gridSpacing;
+  _gridToParticleInputs.velocityField         = _velocityField;
+  _gridToParticleInputs.velocityFieldOld      = _velocityFieldOld;
+  _gridToParticleInputs.materialField         = _materialField;
+  _gridToParticleInputs.particles             = _particles;
 }

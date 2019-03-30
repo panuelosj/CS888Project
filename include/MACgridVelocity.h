@@ -21,9 +21,10 @@ public:
   MatrixXd V();
   Vector2d gridIndexToWorldspaceU(unsigned int i, unsigned int j);
   Vector2d gridIndexToWorldspaceV(unsigned int i, unsigned int j);
-  // DATA SETS
+  // DATA WRITES
   void clear();
   void copyInData(MACgridVelocity* dataIn);
+  void subAllData(MACgridVelocity* dataIn);
   void setU(unsigned int i, unsigned int j, double newU);
   void setV(unsigned int i, unsigned int j, double newV);
   void addU(unsigned int i, unsigned int j, double addU);

@@ -88,7 +88,7 @@ Vector2d MACgridVelocity::gridIndexToWorldspaceV(unsigned int i, unsigned int j)
 }
 
 // =============================================================================
-// ------------------------- DATA SETS -----------------------------------------
+// ------------------------- DATA WRITES ---------------------------------------
 // =============================================================================
 
 void MACgridVelocity::clear() {
@@ -99,6 +99,11 @@ void MACgridVelocity::clear() {
 void MACgridVelocity::copyInData(MACgridVelocity* dataIn) {
   _u = dataIn->U();
   _v = dataIn->V();
+}
+
+void MACgridVelocity::subAllData(MACgridVelocity* dataIn) {
+  _u -= dataIn->U();
+  _v -= dataIn->V();
 }
 
 // setting matrix values
