@@ -1,5 +1,4 @@
 Scanning dependencies of target CS888Project
-[  7%] Building CXX object CMakeFiles/CS888Project.dir/src/main.cpp.o
-[ 15%] Building CXX object CMakeFiles/CS888Project.dir/src/sim.cpp.o
-[ 23%] Linking CXX executable CS888Project
+[  7%] Building CXX object CMakeFiles/CS888Project.dir/src/GridToParticle.cpp.o
+[ 15%] Linking CXX executable CS888Project
 [100%] Built target CS888Project
