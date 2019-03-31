@@ -14,7 +14,7 @@
 //#define INTERPOLATE_BICUBIC   // unimplemented
 
 // PIC/FLIP constant (0 = FLIP, 1 = PIC)
-#define PIC_FLIP_ALPHA 0.1
+#define PIC_FLIP_ALPHA 0.9
 
 //==============================================================================
 //------------------- Particle Advection Scheme --------------------------------
@@ -26,7 +26,7 @@
 
 
 #define D_DENSITY 1.0
-#define D_JITTER_FACTOR 0.1
+#define D_JITTER_FACTOR 0.5
 
 #define GRAVITY_X 0.0
 #define GRAVITY_Y -9.8

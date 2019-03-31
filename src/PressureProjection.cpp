@@ -27,10 +27,10 @@ PressureProjection::PressureProjection(PressureProjectionInputs in) :
   _invGridSpacing( Vector2d(1.0/_gridSpacing(0), 1.0/_gridSpacing(1)) ),
   _gridVectorLength( _gridSize(0) * _gridSize(1) ),
   // constructed variables
-  _b( VectorXd(_gridVectorLength) ),
-  _p( VectorXd(_gridVectorLength) ),
-  _Acompressed( MatrixXi(_gridVectorLength, 3) ),
-  _A( SparseMatrix<double>(_gridVectorLength,_gridVectorLength) )
+  _b( VectorXd(_nFluidCells) ),
+  _p( VectorXd(_nFluidCells) ),
+  _Acompressed( MatrixXi(_nFluidCells, 3) ),
+  _A( SparseMatrix<double>(_nFluidCells,_nFluidCells) )
 {
 
 }
@@ -76,7 +76,7 @@ void PressureProjection::_computeNegativeDivergence() {
   // find the pressure correction that gives a divergence free velocity field.
 
   // clear out _b vector
-  for (unsigned int idx=0; idx < _gridVectorLength; idx++) {
+  for (unsigned int idx=0; idx < _fluidCells->size(); idx++) {
     _b[idx] = 0.0;
   }
 
@@ -86,7 +86,8 @@ void PressureProjection::_computeNegativeDivergence() {
     int i = _fluidCells->index(idx).x();
     int j = _fluidCells->index(idx).y();
 
-    int v = _mapping->gridToVector(i, j);
+    //int v = _mapping->gridToVector(i, j);
+    int v = idx;
 
     double rhs = 0.0;
 
@@ -126,10 +127,39 @@ void PressureProjection::_computeMatrixCoefficients() {
     int i = _fluidCells->index(idx).x();
     int j = _fluidCells->index(idx).y();
 
-    int v = _mapping->gridToVector(i, j);
+    //int v = _mapping->gridToVector(i, j);
+    int v = idx;
     // make sure to clear out the values
     _Acompressed.row(v) = Vector3i(0,0,0);
 
+    // MODIFIED BRIDSON
+    // x neighbours
+    if ( _materialField->isFluid(i-1,j) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+    } else if ( _materialField->isEmpty(i-1,j) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+    }
+    if ( _materialField->isFluid(i+1,j) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+      _Acompressed(v,(int)AMatrixCell::Ax)--;
+    } else if ( _materialField->isEmpty(i+1,j) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+    }
+
+    // y neighbours
+    if ( _materialField->isFluid(i,j-1) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+    } else if ( _materialField->isEmpty(i,j-1) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+    }
+    if ( _materialField->isFluid(i,j+1) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+      _Acompressed(v,(int)AMatrixCell::Ay)--;
+    } else if ( _materialField->isEmpty(i,j+1) ) {
+      _Acompressed(v,(int)AMatrixCell::Adiag)++;
+    }
+
+    /* BRIDSON P78
     // x neighbours
     if ( _materialField->isFluid(i-1,j) ) {
       _Acompressed(v,(int)AMatrixCell::Adiag)++;
@@ -150,7 +180,7 @@ void PressureProjection::_computeMatrixCoefficients() {
       _Acompressed(v,(int)AMatrixCell::Ay)--;
     } else if ( _materialField->isEmpty(i,j+1) ) {
       _Acompressed(v,(int)AMatrixCell::Adiag)++;
-    }
+    } */
   }
 }
 
@@ -163,10 +193,14 @@ void PressureProjection::_translateMatrixToSparseEigen() {
     int i = _fluidCells->index(idx).x();
     int j = _fluidCells->index(idx).y();
 
-    int v = _mapping->gridToVector(i, j);
-    int vDiag = _mapping->gridToVector(i, j);
-    int vX = _mapping->gridToVector(i+1, j);
-    int vY = _mapping->gridToVector(i, j+1);
+    //int v = _mapping->gridToVector(i, j);
+    //int vDiag = _mapping->gridToVector(i, j);
+    //int vX = _mapping->gridToVector(i+1, j);
+    //int vY = _mapping->gridToVector(i, j+1);
+    int v = idx;
+    int vDiag = idx;
+    int vX = _fluidCells->find(i+1, j);
+    int vY = _fluidCells->find(i, j+1);
 
     // compute scale factor (see Bridson p78, Fig 5.5)
     double scale = _dt / (_density*_gridSpacing(0)*_gridSpacing(1));
@@ -188,16 +222,16 @@ void PressureProjection::_translateMatrixToSparseEigen() {
 }
 
 void PressureProjection::_solve() {
-  //std::cout << "A: " << std::endl << _A.transpose() << std::endl;
-  //std::cout << "b: " << std::endl << _b << std::endl;
+  std::cout << "A: " << std::endl << _A.transpose() << std::endl;
+  std::cout << "b: " << std::endl << _b << std::endl;
 
   // now we just need to solve Ap = b
-  //ConjugateGradient<SparseMatrix<double>, Upper|Lower, IncompleteCholesky<double, Upper|Lower>> cg;
-  ConjugateGradient<SparseMatrix<double>> cg;
+  ConjugateGradient<SparseMatrix<double>, Upper|Lower, IncompleteCholesky<double, Upper|Lower>> cg;
+  //ConjugateGradient<SparseMatrix<double>> cg;
   cg.setMaxIterations(1000);
+  //SparseLU<SparseMatrix<double>> cg;
   cg.compute(_A);
   //_p = cg.compute(_A).solve(_b);
-
   //SparseLU<SparseMatrix<double>> cg;
   //_A.makeCompressed();
   //cg.compute(_A);
@@ -235,16 +269,27 @@ void PressureProjection::_pressureGradientUpdate() {
     for (unsigned int j=0; j<_gridSize(1); j++) {
       // since we aren't recasting the _p vector into a matrix, we need the
       // grid to vector mapping index
-      int v = _mapping->gridToVector(i, j);
-      int vX = _mapping->gridToVector(i-1, j);
-      int vY = _mapping->gridToVector(i, j-1);
+      //int v = _mapping->gridToVector(i, j);
+      //int vX = _mapping->gridToVector(i-1, j);
+      //int vY = _mapping->gridToVector(i, j-1);
+      int v = _fluidCells->find(i,j);
+      int vX = _fluidCells->find(i-1,j);
+
+      double pV   = 0.0;
+      double pVX  = 0.0;
+      if (v != GRID_INDEX_NOT_FOUND_VAL) {
+        pV = _p(v);
+      }
+      if (vX != GRID_INDEX_NOT_FOUND_VAL) {
+        pVX = _p(vX);
+      }
 
       // update u
       if (_materialField->isFluid(i-1, j) || _materialField->isFluid(i,j)) {
         if (_materialField->isSolid(i-1, j) || _materialField->isSolid(i,j))
           _velocityField->setU(i, j, _usolid);
         else
-          _velocityField->subU( i, j, scaleX*(_p(v)-_p(vX)) );
+          _velocityField->subU( i, j, scaleX*(pV-pVX) );
       } else {
         _velocityField->setU(i, j, _unknownVelocity);
       }
@@ -256,16 +301,27 @@ void PressureProjection::_pressureGradientUpdate() {
     for (unsigned int j=0; j<_gridSize(1)+1; j++) {
       // since we aren't recasting the _p vector into a matrix, we need the
       // grid to vector mapping index
-      int v = _mapping->gridToVector(i, j);
-      int vX = _mapping->gridToVector(i-1, j);
-      int vY = _mapping->gridToVector(i, j-1);
+      //int v = _mapping->gridToVector(i, j);
+      //int vX = _mapping->gridToVector(i-1, j);
+      //int vY = _mapping->gridToVector(i, j-1);
+      int v = _fluidCells->find(i,j);
+      int vY = _fluidCells->find(i,j-1);
+
+      double pV   = 0.0;
+      double pVY  = 0.0;
+      if (v != GRID_INDEX_NOT_FOUND_VAL) {
+        pV = _p(v);
+      }
+      if (vY != GRID_INDEX_NOT_FOUND_VAL) {
+        pVY = _p(vY);
+      }
 
       // update v
       if (_materialField->isFluid(i, j-1) || _materialField->isFluid(i,j)) {
         if (_materialField->isSolid(i, j-1) || _materialField->isSolid(i,j))
           _velocityField->setV(i, j, _vsolid);
         else
-          _velocityField->subV( i, j, scaleY*(_p(v)-_p(vY)) );
+            _velocityField->subV( i, j, scaleY*(pV-pVY) );
       } else {
         _velocityField->setV(i, j, _unknownVelocity);
       }

@@ -37,8 +37,13 @@ int main()
   Vector2d gridSpacing = gridLengths.cwiseQuotient(gridSize.cast<double>());
   Sim Sim(gridSize, gridSpacing);
   Sim.setBodyAcceleration(Vector2d(GRAVITY_X, GRAVITY_Y));
-  Sim.setBlockToMaterial(7,0,7,10,Material::fluid);
-  Sim.setBlockToMaterial(0,0,3,3,Material::solid);
+
+  // dam break with box
+  /*
+  Sim.setBlockToMaterial(4,0,8,10,Material::fluid);
+  Sim.setBlockToMaterial(0,0,3,3,Material::solid);*/
+  Sim.setBlockToMaterial(2,6,8,8,Material::fluid);
+  Sim.setBlockToMaterial(0,5,12,1,Material::solid);
   Sim.init();
   std::cout << "Starting sim with grid size: " << std::endl << Sim._gridSize << std::endl <<
                             "and grid spacing " << std::endl << Sim._gridSpacing << std::endl;
@@ -187,7 +192,7 @@ int main()
     //glEnd();
 
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
   }
 
