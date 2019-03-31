@@ -1,5 +1,4 @@
 #include "ParticleAdvector.h"
-#include <iostream>
 
 //  ######   #######  ##    ##  ######  ######## ########
 // ##    ## ##     ## ###   ## ##    ##    ##    ##     ##
@@ -99,12 +98,6 @@ void ParticleAdvector::_advectRalstonRK3() {
       // position of the particle
     Vector2d u = p1.row(idx) - pNew.row(idx);
 
-
-    std::cout << idx << "old: "<< p1.row(idx) << std::endl;
-    //std::cout << idx << "k1: "<< k1.row(idx) << std::endl;
-    //std::cout << idx << "k2: "<< k2.row(idx) << std::endl;
-    //std::cout << idx << "k3: "<< k3.row(idx) << std::endl;
-
     while (_materialField->isSolid(gridIndex.x(), gridIndex.y())) {
       // here we know we are inside a solid
 
@@ -147,8 +140,6 @@ void ParticleAdvector::_advectRalstonRK3() {
       // now update the gridIndex to see if the particle is still stuck in a solid
       gridIndex = _particles->particleToGridIndex(idx);
     }
-
-    std::cout << idx << "new: "<< pNew.row(idx) << std::endl;
   }
 
   // we have the new positions, we need to get the new velocities

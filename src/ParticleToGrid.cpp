@@ -1,5 +1,4 @@
 #include "ParticleToGrid.h"
-#include <iostream>
 
 //  ######   #######  ##    ##  ######  ######## ########
 // ##    ## ##     ## ###   ## ##    ##    ##    ##     ##
@@ -86,22 +85,33 @@ void ParticleToGrid::_accumulate() {
     // length (2dx)x(2dy) centered around a particle. note that this is within
     // the index range (i-1,j-1)x(i+1,j+1) for both u and v fields.
     // we iterate through the corresponding indices
-    for (unsigned int i=particleCell.x()-1; i<=particleCell.x()+1; i++) {
-      for (unsigned int j=particleCell.y()-1; j<=particleCell.y()+1; j++) {
-        // need the face centers' worldspace position
-        Vector2d uFacePosition = _velocityField->gridIndexToWorldspaceU(i, j);
-        Vector2d vFacePosition = _velocityField->gridIndexToWorldspaceV(i, j);
-        // measure the distance to the face centers
-        Vector2d particleMinusU = particlePosition - uFacePosition;
-        Vector2d particleMinusV = particlePosition - vFacePosition;
-
+    for (int i=particleCell.x()-1; i<=particleCell.x()+1; i++) {
+      for (int j=particleCell.y()-1; j<=particleCell.y()+1; j++) {
         // refer to Bridson p117, eq 7.2
-        // accumulate the weighted contribution of the particle
-        _velocityField->addU(i,j, _particles->particleVelocity(idx).x()*_kernel_quadraticBSpline(particleMinusU));
-        _velocityField->addV(i,j, _particles->particleVelocity(idx).y()*_kernel_quadraticBSpline(particleMinusV));
-        // accumulate the weights so we can normalize at the end
-        _weights->addU(i,j, _kernel_quadraticBSpline(particleMinusU));
-        _weights->addV(i,j, _kernel_quadraticBSpline(particleMinusV));
+
+        // ACCUMULATE U FIELD
+        if (_velocityField->isValidUIndex(i,j)) {
+          // need the face centers' worldspace position
+          Vector2d uFacePosition = _velocityField->gridIndexToWorldspaceU(i, j);
+          // measure the distance to the face centers
+          Vector2d particleMinusU = particlePosition - uFacePosition;
+          // accumulate the weighted contribution of the particle
+          _velocityField->addU(i,j, _particles->particleVelocity(idx).x()*_kernel_quadraticBSpline(particleMinusU));
+          // accumulate the weights so we can normalize at the end
+          _weights->addU(i,j, _kernel_quadraticBSpline(particleMinusU));
+        }
+
+        // ACCUMULATE V FIELD
+        if (_velocityField->isValidVIndex(i,j)) {
+          // need the face centers' worldspace position
+          Vector2d vFacePosition = _velocityField->gridIndexToWorldspaceV(i, j);
+          // measure the distance to the face centers
+          Vector2d particleMinusV = particlePosition - vFacePosition;
+          // accumulate the weighted contribution of the particle
+          _velocityField->addV(i,j, _particles->particleVelocity(idx).y()*_kernel_quadraticBSpline(particleMinusV));
+          // accumulate the weights so we can normalize at the end
+          _weights->addV(i,j, _kernel_quadraticBSpline(particleMinusV));
+        }
       }
     }
   }

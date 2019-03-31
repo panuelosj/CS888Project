@@ -23,6 +23,8 @@ public:
   Vector2d gridIndexToWorldspaceV(unsigned int i, unsigned int j);
   Vector2d gridIndexToWorldspaceU(Vector2i g);
   Vector2d gridIndexToWorldspaceV(Vector2i g);
+  bool isValidUIndex(int i, int j);
+  bool isValidVIndex(int i, int j);
   // DATA WRITES
   void clear();
   void copyInData(MACgridVelocity* dataIn);

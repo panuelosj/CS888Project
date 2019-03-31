@@ -10,7 +10,7 @@
 #include "sim.h"
 #include "OpenGLLoadShader.h"
 
-#define SCREEN_WIDTH 1920
+#define SCREEN_WIDTH 1080
 #define SCREEN_HEIGHT 1080
 
 using namespace Eigen;
@@ -32,13 +32,13 @@ int main()
   }
 
   // Initialize our simulation
-  Vector2i gridSize(8, 8);
+  Vector2i gridSize(16, 16);
   Vector2d gridLengths(1.0, 1.0);
   Vector2d gridSpacing = gridLengths.cwiseQuotient(gridSize.cast<double>());
   Sim Sim(gridSize, gridSpacing);
   Sim.setBodyAcceleration(Vector2d(GRAVITY_X, GRAVITY_Y));
-  Sim.setBlockToMaterial(1,1,2,5,Material::fluid);
-  Sim.setBlockToMaterial(0,0,3,1,Material::solid);
+  Sim.setBlockToMaterial(7,0,7,10,Material::fluid);
+  Sim.setBlockToMaterial(0,0,3,3,Material::solid);
   Sim.init();
   std::cout << "Starting sim with grid size: " << std::endl << Sim._gridSize << std::endl <<
                             "and grid spacing " << std::endl << Sim._gridSpacing << std::endl;
@@ -54,6 +54,7 @@ int main()
   glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
 
   // Open a window and create its OpenGL context
@@ -64,12 +65,27 @@ int main()
       glfwTerminate();
       return -1;
   }
-  glfwMakeContextCurrent(window); // Initialize GLEW
+  glfwMakeContextCurrent(window);
+  // Initialize GLEW
   glewExperimental=true; // Needed in core profile
   if (glewInit() != GLEW_OK) {
       fprintf(stderr, "Failed to initialize GLEW\n");
+  		glfwTerminate();
       return -1;
   }
+
+	// Dark blue background
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+
+  // create VAO
+  GLuint VertexArrayID;
+  glGenVertexArrays(1, &VertexArrayID);
+  glBindVertexArray(VertexArrayID);
+
+
+  // load GL shaders
+  GLuint programID = LoadShaders( "OpenGLvertex.vertexshader", "OpenGLfragment.fragmentshader" );
+
   // setup position
   glViewport( 0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT );
   glMatrixMode( GL_PROJECTION );
@@ -78,14 +94,26 @@ int main()
   glMatrixMode( GL_MODELVIEW );
   glLoadIdentity( );
 
-  // setup GL points
-  //glPointSize(1.0);
-  //glClearColor(0.0, 0.0, 0.0, 1.0);
-  //glClear(GL_COLOR_BUFFER_BIT);
-  //glColor3f(1.0, 1.0, 1.0);
-  // load GL shaders
-  //GLuint programID = LoadShaders( "OpenGLvertex.vertexshader", "OpenGLfragment.fragmentshader" );
-  //glUseProgram(programID);
+  // setup GL vertex buffer
+
+
+	//static const GLfloat g_vertex_buffer_data[] = {
+	//	-1.0f, -1.0f, 0.0f,
+	//	 1.0f, -1.0f, 0.0f,
+	//	 0.0f,  1.0f, 0.0f,
+	//};
+
+  // This will identify our vertex buffer
+  //GLuint vertexbuffer;
+  // Generate 1 buffer, put the resulting identifier in vertexbuffer
+  //glGenBuffers(1, &vertexbuffer);
+  // The following commands will talk about our 'vertexbuffer' buffer
+  //glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  // Give our vertices to OpenGL.
+  //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+
+  getchar();
 
   // start the simulation loop
   while (true) {
@@ -94,33 +122,62 @@ int main()
     Sim.update(0.01);
     std::cout << "MaterialGrid: " << std::endl << Sim._materialField->material().transpose().colwise().reverse() << std::endl;
 
-    // plot the points
-    GLfloat vertex[2];
+
+
+    // setup vertex buffer data
+    GLfloat g_vertex_buffer_data[Sim.nParticles()*3];
+    for (int i=0; i<Sim.nParticles(); i++) {
+      g_vertex_buffer_data[3*i] = ((GLfloat)Sim.particlePosition(i).x()*2.0f) - 1.0f;
+      g_vertex_buffer_data[3*i+1] = ((GLfloat)Sim.particlePosition(i).y()*2.0f) - 1.0f;
+      g_vertex_buffer_data[3*i+2] = 0.0f;
+    }
+
+    /*static const GLfloat g_vertex_buffer_data[] = {
+  		-1.0f, -1.0f, 0.0f,
+  		 1.0f, -1.0f, 0.0f,
+  		 0.0f,  1.0f, 0.0f,
+  	};*/
+  	GLuint vertexbuffer;
+  	glGenBuffers(1, &vertexbuffer);
+  	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glPointSize(10.0);
+    glEnable(GL_BLEND);
+    glUseProgram(programID);
+    // 1st attribute buffer : vertices
+    glEnableVertexAttribArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+    glVertexAttribPointer(
+       0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+       3,                  // size
+       GL_FLOAT,           // type
+       GL_FALSE,           // normalized?
+       0,                  // stride
+       (void*)0            // array buffer offset
+    );
+    // Draw the triangle !
+    glDrawArrays(GL_POINTS, 0, Sim.nParticles());
+    glDisable(GL_BLEND);
+  	glDisableVertexAttribArray(0);
+
+  	// Swap buffers
+  	glfwSwapBuffers(window);
+/*
+    // setup vertex buffer data
+    GLfloat *g_vertex_buffer_data;
+    g_vertex_buffer_data = new GLfloat[Sim.nParticles()*2];
+    for (int i=0; i<Sim.nParticles(); i++) {
+      g_vertex_buffer_data[2*i] = (GLfloat)Sim.particlePosition(i).x();
+      g_vertex_buffer_data[2*i+1] = (GLfloat)Sim.particlePosition(i).y();
+    }
+    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
     glClearColor(1.0, 0.0, 0.0, 0.0);
-    glClear( GL_COLOR_BUFFER_BIT );
     glColor3f(1.0, 1.0, 1.0);
-    //glEnable( GL_POINT_SMOOTH );
-    //glDisable(GL_DEPTH_TEST);
-  //  glEnableClientState( GL_VERTEX_ARRAY );
-    glPointSize( 10.0 );
-
-    glBegin(GL_POINTS);
-      for (int i=0; i<Sim.nParticles(); i++) {
-        Vector2d p = Sim.particlePosition(i);
-        //glVertex2f((float)p.x()*SCREEN_WIDTH, (float)p.y()*SCREEN_HEIGHT);
-        glVertex3f(0.0f, 0.0f, 0.0f);
-      }
-    glEnd();
-    //glDisable( GL_POINT_SMOOTH );
-    glfwSwapBuffers( window );
-
-  //  for (int i=0; i<Sim.nParticles(); i++) {
-  //    vertex[0] = (GLfloat)Sim.particlePosition(i).x();
-  //    vertex[1] = (GLfloat)Sim.particlePosition(i).y();
-  //    glVertexPointer( 2, GL_FLOAT, 0, vertex );
-  //    glDrawArrays( GL_POINTS, 0, 1 );
-  //  }
-  //  glDisableClientState( GL_VERTEX_ARRAY );
+    glDrawArrays(GL_TRIANGLES, 0, 9);
+    glDisableVertexAttribArray(0);*/
+    //glDisableClientState( GL_VERTEX_ARRAY );
 
     //glBegin(GL_POINTS);
     //  for (int i=0; i<Sim.nParticles(); i++) {

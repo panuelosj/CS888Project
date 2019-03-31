@@ -188,8 +188,8 @@ void PressureProjection::_translateMatrixToSparseEigen() {
 }
 
 void PressureProjection::_solve() {
-  std::cout << "A: " << std::endl << _A.transpose() << std::endl;
-  std::cout << "b: " << std::endl << _b << std::endl;
+  //std::cout << "A: " << std::endl << _A.transpose() << std::endl;
+  //std::cout << "b: " << std::endl << _b << std::endl;
 
   // now we just need to solve Ap = b
   //ConjugateGradient<SparseMatrix<double>, Upper|Lower, IncompleteCholesky<double, Upper|Lower>> cg;
@@ -211,7 +211,7 @@ void PressureProjection::_solve() {
     return;
   }
 
-   std::cout<<"here"<<std::endl;
+  // std::cout<<"here"<<std::endl;
 
   _p = cg.solve(_b);
 

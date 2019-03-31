@@ -1,7 +1,14 @@
 [ 13%] Built target glfw
 Scanning dependencies of target CS888Project
-[ 14%] Building CXX object CMakeFiles/CS888Project.dir/src/main.cpp.o
-[ 15%] Linking CXX executable CS888Project
+[ 14%] Building CXX object CMakeFiles/CS888Project.dir/src/GridToParticle.cpp.o
+[ 15%] Building CXX object CMakeFiles/CS888Project.dir/src/MACgridVelocity.cpp.o
+[ 15%] Building CXX object CMakeFiles/CS888Project.dir/src/ParticleAdvector.cpp.o
+[ 16%] Building CXX object CMakeFiles/CS888Project.dir/src/ParticleToGrid.cpp.o
+[ 17%] Building CXX object CMakeFiles/CS888Project.dir/src/Particles.cpp.o
+[ 18%] Building CXX object CMakeFiles/CS888Project.dir/src/PressureProjection.cpp.o
+[ 19%] Building CXX object CMakeFiles/CS888Project.dir/src/main.cpp.o
+[ 19%] Building CXX object CMakeFiles/CS888Project.dir/src/sim.cpp.o
+[ 20%] Linking CXX executable CS888Project
 [ 24%] Built target CS888Project
 [ 26%] Built target wave
 [ 28%] Built target simple

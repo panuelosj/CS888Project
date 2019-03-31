@@ -95,6 +95,20 @@ Vector2d MACgridVelocity::gridIndexToWorldspaceV(Vector2i g) {
   return gridIndexToWorldspaceV(g.x(), g.y());
 }
 
+// checks to make sure the indices are valid
+bool MACgridVelocity::isValidUIndex(int i, int j) {
+  bool retval = true;
+  if (i<0 || i>=_gridSize(0)+1) retval = false;
+  if (j<0 || j>=_gridSize(1)) retval = false;
+  return retval;
+}
+bool MACgridVelocity::isValidVIndex(int i, int j) {
+  bool retval = true;
+  if (i<0 || i>=_gridSize(0)) retval = false;
+  if (j<0 || j>=_gridSize(1)+1) retval = false;
+  return retval;
+}
+
 // =============================================================================
 // ------------------------- DATA WRITES ---------------------------------------
 // =============================================================================
