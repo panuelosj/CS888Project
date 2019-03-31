@@ -1,4 +1,35 @@
+[ 13%] Built target glfw
 Scanning dependencies of target CS888Project
-[  7%] Building CXX object CMakeFiles/CS888Project.dir/src/GridToParticle.cpp.o
-[ 15%] Linking CXX executable CS888Project
-[100%] Built target CS888Project
+[ 14%] Building CXX object CMakeFiles/CS888Project.dir/src/PressureProjection.cpp.o
+[ 14%] Linking CXX executable CS888Project
+[ 23%] Built target CS888Project
+[ 25%] Built target wave
+[ 27%] Built target simple
+[ 30%] Built target gears
+[ 33%] Built target boing
+[ 35%] Built target heightmap
+[ 37%] Built target splitview
+[ 40%] Built target offscreen
+[ 44%] Built target particles
+[ 47%] Built target sharing
+[ 49%] Built target title
+[ 52%] Built target timeout
+[ 55%] Built target monitors
+[ 58%] Built target clipboard
+[ 60%] Built target cursor
+[ 63%] Built target msaa
+[ 66%] Built target glfwinfo
+[ 69%] Built target threads
+[ 71%] Built target reopen
+[ 73%] Built target opacity
+[ 76%] Built target iconify
+[ 78%] Built target gamma
+[ 81%] Built target events
+[ 84%] Built target icon
+[ 86%] Built target joysticks
+[ 90%] Built target windows
+[ 93%] Built target empty
+[ 96%] Built target inputlag
+[ 99%] Built target tearing
+[100%] Generating HTML documentation
+[100%] Built target docs

@@ -6,6 +6,7 @@
 #include "ParticleToGrid.h"
 #include "GridToParticle.h"
 #include "PressureProjection.h"
+#include "ParticleAdvector.h"
 
 using namespace Eigen;
 
@@ -29,6 +30,10 @@ public:
   void setBodyAcceleration(Vector2d b);
   void setBlockToMaterial(unsigned int i, unsigned int j, unsigned int p, unsigned int q, Material newMaterial);
 
+  // utilities needed
+  int nParticles();
+  Vector2d particlePosition(unsigned int idx);
+
   // definition of grid
   Vector2i            _gridSize = Vector2i(0, 0);
   Vector2d            _gridSpacing = Vector2d(0.0, 0.0);
@@ -42,6 +47,7 @@ public:
   ParticleToGrid      *_particleToGrid;
   PressureProjection  *_pressureProjection;
   GridToParticle      *_gridToParticle;
+  ParticleAdvector    *_particleAdvector;
 
 private:
   // inits
@@ -52,17 +58,20 @@ private:
   void _updateVelocityField();
   void _updatePressureField();
   void _gridToParticleTransfer();
+  void _advectParticles();
   // functions that setup the inputs to the operator classes
-  void _setupPressureProjectionInputs();
   void _setupParticleToGridInputs();
+  void _setupPressureProjectionInputs();
   void _setupGridToParticleInputs();
+  void _setupParticleAdvectorInputs();
 
   // constant
   double _defaultDensity = D_DENSITY;
   // variables
   bool _isInitialized = false;
-  double _timestep;
+  double _dt;
   ParticleToGridInputs      _particleToGridInputs;
-  GridToParticleInputs      _gridToParticleInputs;
   PressureProjectionInputs  _pressureProjectionInputs;
+  GridToParticleInputs      _gridToParticleInputs;
+  ParticleAdvectorInputs    _particleAdvectorInputs;
 };

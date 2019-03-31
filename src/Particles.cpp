@@ -53,6 +53,13 @@ int Particles::nParticles() {
   return _nParticles;
 }
 
+MatrixXd Particles::positions() {
+  return _positions;
+}
+MatrixXd Particles::velocities() {
+  return _velocities;
+}
+
 Vector2d Particles::particleToWorldspace(unsigned int p) {
   // returns the worldspace position of a particle p
   return _positions.row(p);
@@ -60,27 +67,39 @@ Vector2d Particles::particleToWorldspace(unsigned int p) {
 
 Vector2d Particles::particleToReferencespace(unsigned int p) {
   // returns the position of particle p within its reference cell [0,1)x[0,1)
+  return positionToReferencespace(_positions.row(p));
+}
+
+Vector2d Particles::positionToReferencespace(Vector2d p) {
+  // returns the position of a location p within its corresponding reference
+    // cell [0,1)x[0,1)
   double intpart;         // integer part of the output of modf, we just throw
                             // this away
 
   // grid spacings
   double dx     = _materialField->gridSpacing().x();
   double dy     = _materialField->gridSpacing().y();
-  // reference position of the particles
-  double xi     = modf(_positions(p,0)/dx, &intpart);
-  double zeta   = modf(_positions(p,1)/dy, &intpart);
+  // reference position of the particle
+  double xi     = modf(p.x()/dx, &intpart);
+  double zeta   = modf(p.y()/dy, &intpart);
   return Vector2d(xi,zeta);
 }
 
 Vector2i Particles::particleToGridIndex(unsigned int p) {
   // returns the grid index of the cell that contains particle p
 
+  return positionToGridIndex(_positions.row(p));
+}
+
+Vector2i Particles::positionToGridIndex(Vector2d p) {
+  // returns the grid index of the cell that contains position p
+
   // grid spacings
   double dx = _materialField->gridSpacing().x();
   double dy = _materialField->gridSpacing().y();
   // casting to int should give just the integer part
-  int i = (int)(_positions(p,0)/dx);
-  int j = (int)(_positions(p,1)/dy);
+  int i = (int)(p.x()/dx);
+  int j = (int)(p.y()/dy);
   return Vector2i(i,j);
 }
 
@@ -92,8 +111,12 @@ Vector2d Particles::particleVelocity(unsigned int p) {
 // ------------------------- DATA WRITES ---------------------------------------
 // =============================================================================
 
-void Particles::setParticleVelocity(unsigned int p, Vector2d newVelocity) {
-  _velocities.row(p) = newVelocity;
+void Particles::setParticlePosition(unsigned int idx, Vector2d newPosition) {
+  _positions.row(idx) = newPosition;
+}
+
+void Particles::setParticleVelocity(unsigned int idx, Vector2d newVelocity) {
+  _velocities.row(idx) = newVelocity;
 }
 
 // =============================================================================

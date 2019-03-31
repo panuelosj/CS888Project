@@ -29,6 +29,7 @@ private:
   // operators
   void _accumulate();
   void _normalize();
+  void _setBoundaryVelocities();
   void _saveToOldField();
   // kernels
   double _kernel(Vector2d r);

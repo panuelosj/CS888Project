@@ -29,13 +29,19 @@ public:
   bool isSolid(unsigned int i, unsigned int j);
   bool isFluid(unsigned int i, unsigned int j);
   bool isEmpty(unsigned int i, unsigned int j);
+  bool isSolid(Vector2i v);
+  bool isFluid(Vector2i v);
+  bool isEmpty(Vector2i v);
   // returns the number of cells of each type
   unsigned int nSolid();
   unsigned int nFluid();
   unsigned int nEmpty();
 
   // DATA SETS
+  void clearFluid();
+  void setMaterial(unsigned int i, unsigned int j, Material newMaterial);
   void setBlockToMaterial(unsigned int i, unsigned int j, unsigned int p, unsigned int q, Material newMaterial);
+  void updateCellCount();
 
 private:
   // updates the count of _nSolid, _nFluid, _nEmpty

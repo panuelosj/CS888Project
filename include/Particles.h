@@ -15,12 +15,19 @@ public:
 
   // DATA READS
   int nParticles();
+  // full matrix read
+  MatrixXd positions();
+  MatrixXd velocities();
+  // single particle reads
   Vector2d particleToWorldspace(unsigned int p);
   Vector2d particleToReferencespace(unsigned int p);
+  Vector2d positionToReferencespace(Vector2d p);
   Vector2i particleToGridIndex(unsigned int p);
+  Vector2i positionToGridIndex(Vector2d p);
   Vector2d particleVelocity(unsigned int p);
   // DATA WRITES
-  void setParticleVelocity(unsigned int p, Vector2d newVelocity);
+  void setParticlePosition(unsigned int idx, Vector2d newPosition);
+  void setParticleVelocity(unsigned int idx, Vector2d newVelocity);
   // PRINTS
   void printParticleVelocities();
 

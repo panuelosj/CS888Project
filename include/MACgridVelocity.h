@@ -21,6 +21,8 @@ public:
   MatrixXd V();
   Vector2d gridIndexToWorldspaceU(unsigned int i, unsigned int j);
   Vector2d gridIndexToWorldspaceV(unsigned int i, unsigned int j);
+  Vector2d gridIndexToWorldspaceU(Vector2i g);
+  Vector2d gridIndexToWorldspaceV(Vector2i g);
   // DATA WRITES
   void clear();
   void copyInData(MACgridVelocity* dataIn);
@@ -33,6 +35,7 @@ public:
   void subV(unsigned int i, unsigned int j, double subV);
   void divideU(unsigned int i, unsigned int j, double divisorU);
   void divideV(unsigned int i, unsigned int j, double divisorV);
+  void setBoundaryVelocities();
   // body forces
   void setBodyAcceleration(Vector2d b);
   void addBodyAcceleration(Vector2d b);

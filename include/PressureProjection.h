@@ -1,5 +1,6 @@
 #include <Eigen/Core>
 #include <Eigen/Sparse>
+#include <Eigen/SparseCholesky>
 #include "Config.h"
 #include "MACgridVelocity.h"
 #include "MaterialGrid.h"

@@ -43,7 +43,7 @@ void Sim::init() {
 
 void Sim::update(double timestep) {
   // wrapper function to call the internal update function
-  _timestep = timestep;
+  _dt = timestep;
   _update();
 }
 
@@ -53,6 +53,16 @@ void Sim::setBodyAcceleration(Vector2d b) {
 }
 void Sim::setBlockToMaterial(unsigned int i, unsigned int j, unsigned int p, unsigned int q, Material newMaterial) {
   _materialField->setBlockToMaterial(i,j,p,q,newMaterial);
+}
+
+// =============================================================================
+// ------------------------- DATA READS ----------------------------------------
+// =============================================================================
+int Sim::nParticles() {
+  return _particles->nParticles();
+}
+Vector2d Sim::particlePosition(unsigned int idx) {
+  return _particles->particleToWorldspace(idx);
 }
 
 // ########  ########  #### ##     ##    ###    ######## ########
@@ -71,22 +81,33 @@ void Sim::_init() {
   _isInitialized = true;
 }
 
+// =============================================================================
+// ------------------------- MASTER TIMESTEPPING FUNCTION ----------------------
+// =============================================================================
+
 void Sim::_update() {
   assert(_isInitialized);
   _particleToGridTransfer();
 
-  std::cout << "AfterReconstruction U: " << std::endl << _velocityField->U().transpose().colwise().reverse() << std::endl;
-  std::cout << "AfterReconstruction V: " << std::endl << _velocityField->V().transpose().colwise().reverse() << std::endl;
-
   _updateVelocityField();
+
+    std::cout << "Before Projection U: " << std::endl << _velocityField->U().transpose().colwise().reverse() << std::endl;
+    std::cout << "Before Projection V: " << std::endl << _velocityField->V().transpose().colwise().reverse() << std::endl;
 
   _updatePressureField();
 
-  _gridToParticleTransfer();
+    std::cout << "After Projection U: " << std::endl << _velocityField->U().transpose().colwise().reverse() << std::endl;
+    std::cout << "After Projection V: " << std::endl << _velocityField->V().transpose().colwise().reverse() << std::endl;
 
-  std::cout << "NewParticleVelocities: " << std::endl;
-  _particles->printParticleVelocities();
+  //_gridToParticleTransfer();
+  //std::cout << "NewParticleVelocities: " << std::endl;
+  //_particles->printParticleVelocities();
+
+  _advectParticles();
 }
+
+
+
 
 void Sim::_particleToGridTransfer() {
   // PARTICLE TO GRID TRANSFER
@@ -106,7 +127,7 @@ void Sim::_particleToGridTransfer() {
 
 void Sim::_updateVelocityField() {
   // VELOCITY UPDATE
-  _velocityField->update(_timestep);
+  _velocityField->update(_dt);
 }
 
 void Sim::_updatePressureField() {
@@ -130,6 +151,11 @@ void Sim::_gridToParticleTransfer() {
   // PIC: interpolate velocities directly
   // FLIP: interpolate the change in velocities
 
+  // note that we generally would not call this class since we often need to
+  // compute the transfer operations multiple times during the advection step.
+  // I'm just leaving this here as a template on how to use the GridToParticle
+  // class
+
   // create grid to particle transfer class
   _setupGridToParticleInputs();
   _gridToParticle = new GridToParticle(_gridToParticleInputs);
@@ -141,9 +167,29 @@ void Sim::_gridToParticleTransfer() {
   delete _gridToParticle;
 }
 
+void Sim::_advectParticles() {
+  // PARTICLE ADVECTOR
+  // this function advects the particles according to the background velocity
+  // field
+
+  // first create the grid to particle transfer operator
+  _setupGridToParticleInputs();
+  _gridToParticle = new GridToParticle(_gridToParticleInputs);
+
+  // create particle advector class
+  _setupParticleAdvectorInputs();
+  _particleAdvector = new ParticleAdvector(_particleAdvectorInputs);
+
+  // now do it
+  _particleAdvector->advect();
+
+  // make sure to cleanup
+  delete _particleAdvector;
+  delete _gridToParticle;
+}
 
 void Sim::_setupPressureProjectionInputs() {
-  _pressureProjectionInputs.dt                = _timestep;
+  _pressureProjectionInputs.dt                = _dt;
   _pressureProjectionInputs.density           = _defaultDensity;
   _pressureProjectionInputs.gridSize          = _gridSize;
   _pressureProjectionInputs.gridSpacing       = _gridSpacing;
@@ -169,4 +215,15 @@ void Sim::_setupGridToParticleInputs() {
   _gridToParticleInputs.velocityFieldOld      = _velocityFieldOld;
   _gridToParticleInputs.materialField         = _materialField;
   _gridToParticleInputs.particles             = _particles;
+}
+
+void Sim::_setupParticleAdvectorInputs() {
+  _particleAdvectorInputs.dt                  = _dt;
+  _particleAdvectorInputs.gridSize            = _gridSize;
+  _particleAdvectorInputs.gridSpacing         = _gridSpacing;
+  _particleAdvectorInputs.velocityField       = _velocityField;
+  _particleAdvectorInputs.velocityFieldOld    = _velocityFieldOld;
+  _particleAdvectorInputs.materialField       = _materialField;
+  _particleAdvectorInputs.particles           = _particles;
+  _particleAdvectorInputs.gridToParticle      = _gridToParticle;
 }

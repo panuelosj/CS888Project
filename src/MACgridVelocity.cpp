@@ -87,6 +87,14 @@ Vector2d MACgridVelocity::gridIndexToWorldspaceV(unsigned int i, unsigned int j)
   return Vector2d(x,y);
 }
 
+// wrapper functions to accept Vector2i inputs
+Vector2d MACgridVelocity::gridIndexToWorldspaceU(Vector2i g) {
+  return gridIndexToWorldspaceU(g.x(), g.y());
+}
+Vector2d MACgridVelocity::gridIndexToWorldspaceV(Vector2i g) {
+  return gridIndexToWorldspaceV(g.x(), g.y());
+}
+
 // =============================================================================
 // ------------------------- DATA WRITES ---------------------------------------
 // =============================================================================
@@ -147,6 +155,12 @@ void MACgridVelocity::addBodyAcceleration(Vector2d b) {
   _bodyAcceleration += b;
 }
 
+void MACgridVelocity::setBoundaryVelocities() {
+  _u.rightCols<1>() = VectorXd::Zero(_u.rows());
+  _u.leftCols<1>() = VectorXd::Zero(_u.rows());
+  _v.topRows<1>() = RowVectorXd::Zero(_v.cols());
+  _v.bottomRows<1>() = RowVectorXd::Zero(_v.cols());
+}
 
 // ########  ########  #### ##     ##    ###    ######## ########
 // ##     ## ##     ##  ##  ##     ##   ## ##      ##    ##

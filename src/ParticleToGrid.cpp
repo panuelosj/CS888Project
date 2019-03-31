@@ -53,6 +53,10 @@ void ParticleToGrid::transfer() {
   // need to be normalized by the sum of kernel weights
   _normalize();
 
+  // now to enforce free-slip conditions, we need to set the correct boundary
+  // velocities to zero:
+  //_setBoundaryVelocities();
+
   // we need to copy the data into the _velocityFieldOld, which is used for
   // FLIP to know the initial state of the velocity field
   _saveToOldField();
@@ -131,6 +135,10 @@ void ParticleToGrid::_normalize() {
       }
     }
   }
+}
+
+void ParticleToGrid::_setBoundaryVelocities() {
+  _velocityField->setBoundaryVelocities();
 }
 
 void ParticleToGrid::_saveToOldField() {

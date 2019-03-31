@@ -11,9 +11,18 @@
 //==============================================================================
 // pick your poison
 #define INTERPOLATE_BILINEAR
+//#define INTERPOLATE_BICUBIC   // unimplemented
+
 // PIC/FLIP constant (0 = FLIP, 1 = PIC)
 #define PIC_FLIP_ALPHA 1.0
 
+//==============================================================================
+//------------------- Particle Advection Scheme --------------------------------
+//==============================================================================
+// pick your poison
+#define ADVECT_RALSTONRK3
+//#define ADVECT_RK2            // unimplemented
+//#define ADVECT_RK4            // unimplemented
 
 
 #define D_DENSITY 1.0

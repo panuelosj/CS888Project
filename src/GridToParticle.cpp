@@ -21,11 +21,15 @@ GridToParticle::GridToParticle(GridToParticleInputs in) :
   _materialField      ( in.materialField ),
   _particles          ( in.particles )
 {
-
+  // compute the change in velocity field (FLIP)
+  _velocityFieldDelta = new MACgridVelocity( _gridSize, _gridSpacing );
+  _velocityFieldDelta->copyInData(_velocityField);
+  _velocityFieldDelta->subAllData(_velocityFieldOld);
 }
 
 GridToParticle::~GridToParticle() {
-
+  // make sure to cleanup
+  delete _velocityFieldDelta;
 }
 
 // ########  ##     ## ########  ##       ####  ######
@@ -36,47 +40,83 @@ GridToParticle::~GridToParticle() {
 // ##        ##     ## ##     ## ##        ##  ##    ##
 // ##         #######  ########  ######## ####  ######
 
-// TODO: MAKE SURE TO UPDATE THE MATERIAL MATRIX YOU DORK!
+// =============================================================================
+// ------------------------- POSITION OPERATORS --------------------------------
+// =============================================================================
+// These are the more general interpolation operators
+
+Vector2d GridToParticle::interpolateOneVelocity(Vector2d p, Vector2d v) {
+  // This function performs the PIC/FLIP interpolation for a single position p
+
+  // need p's referencespace position (within its own cell)
+  Vector2d referenceSpacePosition = _particles->positionToReferencespace(p);
+  // need the particle's gridspace position
+  Vector2i cellIndex = _particles->positionToGridIndex(p);
+
+  // now we have a choice of interpolation methods
+  // we'll make this a compile-time choice
+
+  // interpolate velocity (PIC)
+  Vector2d interpolatedPIC = _interpolate(_velocityField,
+                                          cellIndex,
+                                          referenceSpacePosition);
+
+  // interpolate velocity change (FLIP)
+  Vector2d interpolatedFLIP = _interpolate( _velocityFieldDelta,
+                                            cellIndex,
+                                            referenceSpacePosition);
+
+  // now we can combine the PIC/FLIP contributions to get the new velocity
+  // first grab old velocity
+  Vector2d vOld = v;
+  // refer to Bridson p118
+  Vector2d vNew = PIC_FLIP_ALPHA*interpolatedPIC
+                  + (1.0-PIC_FLIP_ALPHA)*(vOld + interpolatedFLIP);
+
+  return vNew;
+}
+
+void GridToParticle::interpolateVelocities(MatrixXd *positions, MatrixXd *velocities, MatrixXd *retval) {
+  // This function performs the interpolation over positions given in the input
+    // matrix and saves the output into the retval matrix.
+
+  // do the interpolation for every particle
+  for (unsigned int idx=0; idx<_particles->nParticles(); idx++) {
+    retval->row(idx) = interpolateOneVelocity(positions->row(idx), velocities->row(idx));
+  }
+}
+
+// =============================================================================
+// ------------------------- PARTICLE INDEX OPERATORS --------------------------
+// =============================================================================
+// These call the general position operators with the particle values
+
+Vector2d GridToParticle::interpolateOneVelocity(unsigned int idx) {
+  // This function performs the PIC/FLIP interpolation for a single particle idx
+
+  return interpolateOneVelocity(_particles->particleToWorldspace(idx), _particles->particleVelocity(idx));
+}
+
+void GridToParticle::interpolateVelocities(MatrixXd *retval) {
+  // This function performs the interpolation over all the particles and saves
+    // the output into the retval matrix.
+
+  // do the interpolation for every particle
+  for (unsigned int idx=0; idx<_particles->nParticles(); idx++) {
+    retval->row(idx) = interpolateOneVelocity(idx);
+  }
+}
 
 void GridToParticle::transfer() {
-  //
-
-  // compute the change in velocity field (FLIP)
-  _velocityFieldDelta = new MACgridVelocity( _gridSize, _gridSpacing );
-  _velocityFieldDelta->copyInData(_velocityField);
-  _velocityFieldDelta->subAllData(_velocityFieldOld);
+  // This function performs the interpolation then saves the new velocities into
+    // the particle data. Note that this is generally less preferred, since we
+    // usually want to save the velocities into another matrix for Runge-Kutta
+    // but it's here if you need it.
 
   // do interpolation for every particle
   for (unsigned int idx=0; idx<_particles->nParticles(); idx++) {
-    // need the particle's referencespace position (within its own cell)
-    Vector2d particleReferencespacePosition = _particles->particleToReferencespace(idx);
-    // need the particle's gridspace position
-    Vector2i particleCell = _particles->particleToGridIndex(idx);
-
-    // now we have a choice of interpolation methods
-    // we'll make this a compile-time choice
-
-    // interpolate velocity (PIC)
-    Vector2d interpolatedPIC = _interpolate(_velocityField,
-                                            particleCell,
-                                            particleReferencespacePosition);
-
-    // interpolate velocity change (FLIP)
-    Vector2d interpolatedFLIP = _interpolate( _velocityFieldDelta,
-                                              particleCell,
-                                              particleReferencespacePosition);
-
-    // now we can combine the PIC/FLIP contributions to get the new velocity
-    // first grab old velocity
-    Vector2d vOld = _particles->particleVelocity(idx);
-    Vector2d vNew = PIC_FLIP_ALPHA*interpolatedPIC
-                    + (1.0-PIC_FLIP_ALPHA)*(vOld + interpolatedFLIP);
-
-    _particles->setParticleVelocity(idx, vNew);
+    _particles->setParticleVelocity(idx, interpolateOneVelocity(idx));
   }
-
-  // make sure to cleanup
-  delete _velocityFieldDelta;
 }
 
 

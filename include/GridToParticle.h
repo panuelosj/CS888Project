@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Eigen/Core>
 #include "Config.h"
 #include "MACgridVelocity.h"
@@ -23,6 +25,12 @@ public:
   GridToParticle(GridToParticleInputs in);
   ~GridToParticle();
 
+  // GENERAL POSITION INTERPOLATION OPERATORS
+  Vector2d interpolateOneVelocity(Vector2d p, Vector2d v);
+  void interpolateVelocities(MatrixXd *positions, MatrixXd *velocities, MatrixXd *retval);
+  // PARTICLE INDEX INTERPOLATION OPERATORS
+  Vector2d interpolateOneVelocity(unsigned int idx);
+  void interpolateVelocities(MatrixXd *retval);
   void transfer();
 
 private:
