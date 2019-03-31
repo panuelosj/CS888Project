@@ -1,6 +1,8 @@
 #include <Eigen/Core>
 #include "MaterialGrid.h"
 
+#define GRID_INDEX_NOT_FOUND_VAL -1
+
 using namespace Eigen;
 
 // This class is responsible for keeping a list of grid indices, so as to cache
@@ -16,6 +18,7 @@ public:
 
   Vector2i index(unsigned int idx);
   unsigned int size();
+  int find(unsigned int i, unsigned int j);
 
 private:
   VectorXi _xs;

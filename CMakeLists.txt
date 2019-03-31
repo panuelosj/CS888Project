@@ -12,6 +12,7 @@ target_link_libraries(CS888Project ${OPENGL_gl_LIBRARY} glfw)
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
-include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
+find_package(GLEW REQUIRED)
+include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS})
 
-target_link_libraries(CS888Project  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} glfw ${GLFW_LIBRARIES})
+target_link_libraries(CS888Project  ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} glfw ${GLFW_LIBRARIES} ${GLEW_LIBRARIES})

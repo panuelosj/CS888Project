@@ -22,6 +22,7 @@ PressureProjection::PressureProjection(PressureProjectionInputs in) :
   _materialField  ( in.materialField ),
   _mapping        ( in.mapping ),
   _fluidCells     ( in.fluidCells ),
+  _nFluidCells    ( _materialField->nFluid() ),
   // derived variables
   _invGridSpacing( Vector2d(1.0/_gridSpacing(0), 1.0/_gridSpacing(1)) ),
   _gridVectorLength( _gridSize(0) * _gridSize(1) ),
@@ -74,6 +75,11 @@ void PressureProjection::_computeNegativeDivergence() {
   // Constructs the right hand side vector for the linear system to
   // find the pressure correction that gives a divergence free velocity field.
 
+  // clear out _b vector
+  for (unsigned int idx=0; idx < _gridVectorLength; idx++) {
+    _b[idx] = 0.0;
+  }
+
   for (unsigned int idx=0; idx < _fluidCells->size(); idx++) {
     // centered divergence estimate
     // Refer to Bridson p72 Fig 5.3
@@ -82,8 +88,10 @@ void PressureProjection::_computeNegativeDivergence() {
 
     int v = _mapping->gridToVector(i, j);
 
-    double rhs = -_invGridSpacing(0)*(double)(_velocityField->U(i+1,j) - _velocityField->U(i,j))
-                 -_invGridSpacing(1)*(double)(_velocityField->V(i,j+1) - _velocityField->V(i,j));
+    double rhs = 0.0;
+
+    rhs = -_invGridSpacing(0)*(double)(_velocityField->U(i+1,j) - _velocityField->U(i,j))
+          -_invGridSpacing(1)*(double)(_velocityField->V(i,j+1) - _velocityField->V(i,j));
 
     // modification for solid velocity
     // Refer to Bridson p76 Fig 5.4
@@ -102,10 +110,7 @@ void PressureProjection::_computeNegativeDivergence() {
       rhs += _invGridSpacing(1)*(_velocityField->V(i, j+1) - _vsolid);
     }
 
-    //_b[v] = rhs;
-    // cleanup, don't bother saving if _b is very small
-    if (abs(rhs) > D_EPSILON) _b[v] = rhs;
-    else _b[v] = 0.0;
+    _b[v] = rhs;
   }
 }
 
@@ -122,6 +127,8 @@ void PressureProjection::_computeMatrixCoefficients() {
     int j = _fluidCells->index(idx).y();
 
     int v = _mapping->gridToVector(i, j);
+    // make sure to clear out the values
+    _Acompressed.row(v) = Vector3i(0,0,0);
 
     // x neighbours
     if ( _materialField->isFluid(i-1,j) ) {

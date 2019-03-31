@@ -64,6 +64,14 @@ unsigned int GridIndices::size() {
   return _nIndices;
 }
 
+int GridIndices::find(unsigned int i, unsigned int j) {
+  for (unsigned int idx=0; idx<_nIndices; idx++) {
+    if (_xs[idx] == i && _ys[idx] == j) return idx;
+  }
+  // index not found
+  return GRID_INDEX_NOT_FOUND_VAL;
+}
+
 // ########  ########  #### ##     ##    ###    ######## ########
 // ##     ## ##     ##  ##  ##     ##   ## ##      ##    ##
 // ##     ## ##     ##  ##  ##     ##  ##   ##     ##    ##

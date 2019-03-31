@@ -60,6 +60,7 @@ private:
   MaterialGrid      *_materialField;    // voxel grid identifier
   GridIndexMapping  *_mapping;          // grid to vector index key mapping
   GridIndices       *_fluidCells;       // list of fluid cell indices
+  unsigned int      _nFluidCells;       // number of fluid cells
 
   // DERIVED VARIABLES
   int _gridVectorLength     = 0;
