@@ -111,6 +111,10 @@ double Particles::particleSpeed(unsigned int p) {
   return sqrt(_velocities(p,0)*_velocities(p,0) + _velocities(p,1)*_velocities(p,1));
 }
 
+double Particles::maxParticleSpeed() {
+  return sqrt(((_velocities.col(0)).cwiseAbs2() + (_velocities.col(1)).cwiseAbs2()).maxCoeff());
+}
+
 // =============================================================================
 // ------------------------- DATA WRITES ---------------------------------------
 // =============================================================================

@@ -1,6 +1,4 @@
 #include "ParticleAdvector.h"
-#include <iostream>
-
 
 //  ######   #######  ##    ##  ######  ######## ########
 // ##    ## ##     ## ###   ## ##    ##    ##    ##     ##
@@ -57,6 +55,9 @@ void ParticleAdvector::advect() {
       // find the max substep size
       MatrixXd tempVelocity = MatrixXd(_nParticles, 2);
       _gridToParticle->interpolateVelocities(&_pOld, &_vOld, &tempVelocity);
+      // get max speed
+        // NOTE THAT WE CAN'T JUST CALL _particle->maxSpeed() HERE SINCE WE INTERPOLATED JUST NOW
+        // AND WE DON'T WANT TO EDIT THE PARTICLE VELOCITIES UNTIL THE ACTUAL ADVECT STEP
       double maxSpeed = sqrt(((tempVelocity.col(0)).cwiseAbs2() + (tempVelocity.col(1)).cwiseAbs2()).maxCoeff());
       // set substep dt to the longest allowable by CFL condition
       _dtSubstep = sqrt(_gridSpacing(0)*_gridSpacing(1))/(maxSpeed+D_EPSILON);

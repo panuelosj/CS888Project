@@ -24,6 +24,8 @@ Vector3d colorSolid = Vector3d(0.1,0.18,0.16);
 Vector3d colorFluid = Vector3d(0.55,0.6,0.68);
 Vector3d colorEmpty = Vector3d(0.68,1.0,0.93);
 
+int startOpenGL();
+void endOpenGL();
 void plotOpenGL();
 
 int main()
@@ -49,42 +51,85 @@ int main()
   mySim = new Sim(gridSize, gridSpacing);
   mySim->setBodyAcceleration(Vector2d(GRAVITY_X, GRAVITY_Y));
 
+  // 16x16 full fluid
+  //mySim->setBlockToMaterial(0,0,16,16,Material::fluid);
+  // 16x16 half fluid
+  //mySim->setBlockToMaterial(0,0,16,8,Material::fluid);
+  // 16x16 half fluid drop
+  //mySim->setBlockToMaterial(0,6,16,8,Material::fluid);
+  // 16x16 block fluid drop
+  //mySim->setBlockToMaterial(4,6,8,8,Material::fluid);
+
   // 16x16 dam break with box
   //mySim->setBlockToMaterial(4,0,8,10,Material::fluid);
   //mySim->setBlockToMaterial(0,0,3,3,Material::solid);
 
   // 16x16 dam break
-  //mySim->setBlockToMaterial(4,0,8,10,Material::fluid);
-  mySim->setBlockToMaterial(0,0,8,15,Material::fluid);
+  //mySim->setBlockToMaterial(4,0,8,15,Material::fluid);
+  //mySim->setBlockToMaterial(0,0,8,15,Material::fluid);
 
   // 32x32 dam break
-  //mySim->setBlockToMaterial(8,0,16,20,Material::fluid);
-
-  // 32x32 plank
-  /*mySim->setBlockToMaterial(4,11,16,16,Material::fluid);
-  mySim->setBlockToMaterial(0,10,24,1,Material::solid);*/
+  //mySim->setBlockToMaterial(8,0,16,30,Material::fluid);
+  //mySim->setBlockToMaterial(0,0,16,30,Material::fluid);
 
   // 16x16 plank
   //mySim->setBlockToMaterial(2,6,8,8,Material::fluid);
   //mySim->setBlockToMaterial(0,5,12,1,Material::solid);
+
+  // 32x32 plank
+  //mySim->setBlockToMaterial(4,11,16,16,Material::fluid);
+  //mySim->setBlockToMaterial(0,10,24,1,Material::solid);
 
   // 16x16 maze
   //mySim->setBlockToMaterial(1,11,10,5,Material::fluid);
   //mySim->setBlockToMaterial(0,10,12,1,Material::solid);
   //mySim->setBlockToMaterial(4,6,12,1,Material::solid);
 
-
   // 32x32 maze
-  //mySim->setBlockToMaterial(1,22,20,10,Material::fluid);
+  //mySim->setBlockToMaterial(2,21,20,11,Material::fluid);
   //mySim->setBlockToMaterial(0,20,24,1,Material::solid);
   //mySim->setBlockToMaterial(8,12,24,1,Material::solid);
 
   mySim->init();
-  std::cout << "Starting sim with grid size: " << std::endl << mySim->_gridSize << std::endl <<
-                            "and grid spacing " << std::endl << mySim->_gridSpacing << std::endl;
+  std::cout << "Starting sim with grid size: "
+                  << std::endl << mySim->gridSize()
+                  << std::endl << std::endl
+            << "and grid spacing "
+                  << std::endl << mySim->gridSpacing()
+                  << std::endl << std::endl;
+
+  // initialize OpenGL
+  if (startOpenGL() != 0) {
+    fprintf(stderr, "Failed to initialize OpenGL\n");
+    return -1;
+  }
+
+  // show the initial state until user presses enter
+  std::cout << std::endl;
+  std::cout << "Simulation ready. Please press Enter to start:" << std::endl
+            << "\tAwaiting user input..." << std::endl << std::endl;
+  glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
+  while( glfwGetKey(window, GLFW_KEY_ENTER) != GLFW_PRESS ) {
+    plotOpenGL();
+    glfwPollEvents();
+  }
+
+  // start the simulation loop
+  while (true) {
+    // advance in time
+    mySim->update(0.01);
+
+    plotOpenGL();
+    //std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  }
+
+  endOpenGL();
+
+  return 0;
+}
 
 
-
+int startOpenGL() {
   // Start GL Window
   glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // We want OpenGL 3.3
@@ -125,28 +170,18 @@ int main()
   glMatrixMode( GL_MODELVIEW );
   glLoadIdentity( );
 
-
-  // show the initial state
-  plotOpenGL();
-  getchar();
-  // start the simulation loop
-  while (true) {
-
-    // advance in time
-    mySim->update(0.01);
-    //std::cout << "MaterialGrid: " << std::endl << mySim->_materialField->material().transpose().colwise().reverse() << std::endl;
-
-    plotOpenGL();
-
-    //std::this_thread::sleep_for(std::chrono::milliseconds(50));
-  }
-  glfwTerminate();
-
   return 0;
 }
 
+void endOpenGL() {
+  glfwTerminate();
+}
 
 void plotOpenGL() {
+// =============================================================================
+// ------------------------- PLOT GRID -----------------------------------------
+// =============================================================================
+
   // setup vertex buffer data for the background grid
     // nGridCells * 2 triangles per cell * 3 vertices per triangle * _ number of components
   GLfloat g_vertex_buffer_data_grid[mySim->nGridCells()*2*3*2 + mySim->nGridCells()*2*3*3];
@@ -235,22 +270,23 @@ void plotOpenGL() {
 	glDisableVertexAttribArray(1);
 
 
-
-
-
-
+// =============================================================================
+// ------------------------- PLOT PARTICLES ------------------------------------
+// =============================================================================
 
   // setup vertex buffer data
   GLfloat g_vertex_buffer_data[mySim->nParticles()*2 + mySim->nParticles()*3];
   int offsetPositions = 0;
   int offsetColors = mySim->nParticles()*2;
+  double maxParticleSpeed = mySim->maxParticleSpeed() + D_EPSILON;
+  //if (maxParticleSpeed < 1.0) maxParticleSpeed = 1.0;
   for (int i=0; i<mySim->nParticles(); i++) {
     // positions
     g_vertex_buffer_data[offsetPositions + 2*i] = ((GLfloat)mySim->particlePosition(i).x()*2.0f) - 1.0f;
     g_vertex_buffer_data[offsetPositions + 2*i+1] = ((GLfloat)mySim->particlePosition(i).y()*2.0f) - 1.0f;
 
     // colors
-    g_vertex_buffer_data[offsetColors + 3*i] = ((GLfloat)mySim->particleSpeed(i));
+    g_vertex_buffer_data[offsetColors + 3*i] = ((GLfloat)(mySim->particleSpeed(i)/maxParticleSpeed));
     g_vertex_buffer_data[offsetColors + 3*i+1] = 1.0f;
     g_vertex_buffer_data[offsetColors + 3*i+2] = 1.0f;
   }

@@ -31,6 +31,7 @@ public:
   void setBlockToMaterial(unsigned int i, unsigned int j, unsigned int p, unsigned int q, Material newMaterial);
 
   // DATA READS
+  double time();
   int nParticles();
   int nGridCells();
   Vector2i gridSize();
@@ -38,21 +39,7 @@ public:
   Material materialAtCell(unsigned int i, unsigned int j);
   Vector2d particlePosition(unsigned int idx);
   double particleSpeed(unsigned int idx);
-
-  // definition of grid
-  Vector2i            _gridSize = Vector2i(0, 0);
-  Vector2d            _gridSpacing = Vector2d(0.0, 0.0);
-  // simulation classes
-  Particles           *_particles;
-  MACgridVelocity     *_velocityField;
-  MACgridVelocity     *_velocityFieldOld;     // we need this for FLIP
-  MaterialGrid        *_materialField;
-  GridIndexMapping    *_mapping;
-  // operators
-  ParticleToGrid      *_particleToGrid;
-  PressureProjection  *_pressureProjection;
-  GridToParticle      *_gridToParticle;
-  ParticleAdvector    *_particleAdvector;
+  double maxParticleSpeed();
 
 private:
   // inits
@@ -70,8 +57,25 @@ private:
   void _setupGridToParticleInputs();
   void _setupParticleAdvectorInputs();
 
-  // constant
+  // constants
   double _defaultDensity = D_DENSITY;
+
+  // definition of grid
+  double              _t = 0.0;
+  Vector2i            _gridSize = Vector2i(0, 0);
+  Vector2d            _gridSpacing = Vector2d(0.0, 0.0);
+  // simulation classes
+  Particles           *_particles;
+  MACgridVelocity     *_velocityField;
+  MACgridVelocity     *_velocityFieldOld;     // we need this for FLIP
+  MaterialGrid        *_materialField;
+  GridIndexMapping    *_mapping;
+  // operators
+  ParticleToGrid      *_particleToGrid;
+  PressureProjection  *_pressureProjection;
+  GridToParticle      *_gridToParticle;
+  ParticleAdvector    *_particleAdvector;
+
   // variables
   bool _isInitialized = false;
   double _dt;

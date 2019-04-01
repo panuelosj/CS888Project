@@ -1,5 +1,4 @@
 #include "MACgridVelocity.h"
-#include <iostream>
 #include "assert.h"
 
 //  ######   #######  ##    ##  ######  ######## ########
