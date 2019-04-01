@@ -15,6 +15,17 @@
 
 using namespace Eigen;
 
+// global variable for window context
+GLFWwindow* window;
+GLuint programID;
+Sim* mySim;
+// just make a list of colors
+Vector3d colorSolid = Vector3d(0.1,0.18,0.16);
+Vector3d colorFluid = Vector3d(0.55,0.6,0.68);
+Vector3d colorEmpty = Vector3d(0.68,1.0,0.93);
+
+void plotOpenGL();
+
 int main()
 {
   // Check and Initialize Libs
@@ -35,23 +46,42 @@ int main()
   Vector2i gridSize(16, 16);
   Vector2d gridLengths(1.0, 1.0);
   Vector2d gridSpacing = gridLengths.cwiseQuotient(gridSize.cast<double>());
-  Sim Sim(gridSize, gridSpacing);
-  Sim.setBodyAcceleration(Vector2d(GRAVITY_X, GRAVITY_Y));
+  mySim = new Sim(gridSize, gridSpacing);
+  mySim->setBodyAcceleration(Vector2d(GRAVITY_X, GRAVITY_Y));
 
-  // dam break with box
-  /*
-  Sim.setBlockToMaterial(4,0,8,10,Material::fluid);
-  Sim.setBlockToMaterial(0,0,3,3,Material::solid);*/
-  Sim.setBlockToMaterial(2,6,8,8,Material::fluid);
-  Sim.setBlockToMaterial(0,5,12,1,Material::solid);
-  Sim.init();
-  std::cout << "Starting sim with grid size: " << std::endl << Sim._gridSize << std::endl <<
-                            "and grid spacing " << std::endl << Sim._gridSpacing << std::endl;
+  // 16x16 dam break with box
+  //mySim->setBlockToMaterial(4,0,8,10,Material::fluid);
+  //mySim->setBlockToMaterial(0,0,3,3,Material::solid);
+
+  // 16x16 dam break
+  //mySim->setBlockToMaterial(4,0,8,10,Material::fluid);
+  mySim->setBlockToMaterial(0,0,8,15,Material::fluid);
+
+  // 32x32 dam break
+  //mySim->setBlockToMaterial(8,0,16,20,Material::fluid);
+
+  // 32x32 plank
+  /*mySim->setBlockToMaterial(4,11,16,16,Material::fluid);
+  mySim->setBlockToMaterial(0,10,24,1,Material::solid);*/
+
+  // 16x16 plank
+  //mySim->setBlockToMaterial(2,6,8,8,Material::fluid);
+  //mySim->setBlockToMaterial(0,5,12,1,Material::solid);
+
+  // 16x16 maze
+  //mySim->setBlockToMaterial(1,11,10,5,Material::fluid);
+  //mySim->setBlockToMaterial(0,10,12,1,Material::solid);
+  //mySim->setBlockToMaterial(4,6,12,1,Material::solid);
 
 
+  // 32x32 maze
+  //mySim->setBlockToMaterial(1,22,20,10,Material::fluid);
+  //mySim->setBlockToMaterial(0,20,24,1,Material::solid);
+  //mySim->setBlockToMaterial(8,12,24,1,Material::solid);
 
-
-
+  mySim->init();
+  std::cout << "Starting sim with grid size: " << std::endl << mySim->_gridSize << std::endl <<
+                            "and grid spacing " << std::endl << mySim->_gridSpacing << std::endl;
 
 
 
@@ -63,7 +93,6 @@ int main()
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
 
   // Open a window and create its OpenGL context
-  GLFWwindow* window; // (In the accompanying source code, this variable is global for simplicity)
   window = glfwCreateWindow( SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
   if( window == NULL ){
       fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
@@ -80,18 +109,15 @@ int main()
   }
 
 	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	glClearColor(colorSolid.x(), colorSolid.y(), colorSolid.z(), 0.0f);
 
   // create VAO
   GLuint VertexArrayID;
   glGenVertexArrays(1, &VertexArrayID);
   glBindVertexArray(VertexArrayID);
-
-
   // load GL shaders
-  GLuint programID = LoadShaders( "OpenGLvertex.vertexshader", "OpenGLfragment.fragmentshader" );
-
-  // setup position
+  programID = LoadShaders( "OpenGLvertex.vertexshader", "OpenGLfragment.fragmentshader" );
+  // setup basic transformation matrices
   glViewport( 0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT );
   glMatrixMode( GL_PROJECTION );
   glLoadIdentity( );
@@ -99,107 +125,170 @@ int main()
   glMatrixMode( GL_MODELVIEW );
   glLoadIdentity( );
 
-  // setup GL vertex buffer
 
-
-	//static const GLfloat g_vertex_buffer_data[] = {
-	//	-1.0f, -1.0f, 0.0f,
-	//	 1.0f, -1.0f, 0.0f,
-	//	 0.0f,  1.0f, 0.0f,
-	//};
-
-  // This will identify our vertex buffer
-  //GLuint vertexbuffer;
-  // Generate 1 buffer, put the resulting identifier in vertexbuffer
-  //glGenBuffers(1, &vertexbuffer);
-  // The following commands will talk about our 'vertexbuffer' buffer
-  //glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-  // Give our vertices to OpenGL.
-  //glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-
+  // show the initial state
+  plotOpenGL();
   getchar();
-
   // start the simulation loop
   while (true) {
 
     // advance in time
-    Sim.update(0.01);
-    std::cout << "MaterialGrid: " << std::endl << Sim._materialField->material().transpose().colwise().reverse() << std::endl;
+    mySim->update(0.01);
+    //std::cout << "MaterialGrid: " << std::endl << mySim->_materialField->material().transpose().colwise().reverse() << std::endl;
 
+    plotOpenGL();
 
-
-    // setup vertex buffer data
-    GLfloat g_vertex_buffer_data[Sim.nParticles()*3];
-    for (int i=0; i<Sim.nParticles(); i++) {
-      g_vertex_buffer_data[3*i] = ((GLfloat)Sim.particlePosition(i).x()*2.0f) - 1.0f;
-      g_vertex_buffer_data[3*i+1] = ((GLfloat)Sim.particlePosition(i).y()*2.0f) - 1.0f;
-      g_vertex_buffer_data[3*i+2] = 0.0f;
-    }
-
-    /*static const GLfloat g_vertex_buffer_data[] = {
-  		-1.0f, -1.0f, 0.0f,
-  		 1.0f, -1.0f, 0.0f,
-  		 0.0f,  1.0f, 0.0f,
-  	};*/
-  	GLuint vertexbuffer;
-  	glGenBuffers(1, &vertexbuffer);
-  	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glPointSize(10.0);
-    glEnable(GL_BLEND);
-    glUseProgram(programID);
-    // 1st attribute buffer : vertices
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glVertexAttribPointer(
-       0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
-       3,                  // size
-       GL_FLOAT,           // type
-       GL_FALSE,           // normalized?
-       0,                  // stride
-       (void*)0            // array buffer offset
-    );
-    // Draw the triangle !
-    glDrawArrays(GL_POINTS, 0, Sim.nParticles());
-    glDisable(GL_BLEND);
-  	glDisableVertexAttribArray(0);
-
-  	// Swap buffers
-  	glfwSwapBuffers(window);
-/*
-    // setup vertex buffer data
-    GLfloat *g_vertex_buffer_data;
-    g_vertex_buffer_data = new GLfloat[Sim.nParticles()*2];
-    for (int i=0; i<Sim.nParticles(); i++) {
-      g_vertex_buffer_data[2*i] = (GLfloat)Sim.particlePosition(i).x();
-      g_vertex_buffer_data[2*i+1] = (GLfloat)Sim.particlePosition(i).y();
-    }
-    glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
-    glClearColor(1.0, 0.0, 0.0, 0.0);
-    glColor3f(1.0, 1.0, 1.0);
-    glDrawArrays(GL_TRIANGLES, 0, 9);
-    glDisableVertexAttribArray(0);*/
-    //glDisableClientState( GL_VERTEX_ARRAY );
-
-    //glBegin(GL_POINTS);
-    //  for (int i=0; i<Sim.nParticles(); i++) {
-    //    Vector2d p = Sim.particlePosition(i);
-    //    glVertex2f((float)p.x(), (float)p.y());
-    //  }
-    //glEnd();
-
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
+    //std::this_thread::sleep_for(std::chrono::milliseconds(50));
   }
-
   glfwTerminate();
-  std::cout << "MACVelocityField U: " << std::endl << Sim._velocityField->U().transpose().colwise().reverse() << std::endl;
-  std::cout << "MACVelocityField V: " << std::endl << Sim._velocityField->V().transpose().colwise().reverse() << std::endl;
-  std::cout << "MaterialGrid: " << std::endl << Sim._materialField->material().transpose().colwise().reverse() << std::endl;
 
   return 0;
+}
+
+
+void plotOpenGL() {
+  // setup vertex buffer data for the background grid
+    // nGridCells * 2 triangles per cell * 3 vertices per triangle * _ number of components
+  GLfloat g_vertex_buffer_data_grid[mySim->nGridCells()*2*3*2 + mySim->nGridCells()*2*3*3];
+  int offsetGridVertices = 0;
+  int offsetGridColors = mySim->nGridCells()*2*3*2;
+  for (int i=0; i<mySim->gridSize().x(); i++) {
+    for (int j=0; j<mySim->gridSize().y(); j++) {
+      // get the flat index
+      int idx = i + mySim->gridSize().x()*j;
+
+      // positions
+        // for a quad with vertices 0=(0,0); 1=(1,0); 2=(0,1); 3=(1,1)
+        // we list vertices in order 0-1-2-1-2-3
+      // make a matrix containing the vertex positions first
+      MatrixXd gridVertexPositions = MatrixXd::Zero(4,2);
+      gridVertexPositions.row(0) = Vector2d(i*mySim->gridSpacing().x(),j*mySim->gridSpacing().y());
+      gridVertexPositions.row(1) = Vector2d((i+1)*mySim->gridSpacing().x(),j*mySim->gridSpacing().y());
+      gridVertexPositions.row(2) = Vector2d(i*mySim->gridSpacing().x(),(j+1)*mySim->gridSpacing().y());
+      gridVertexPositions.row(3) = Vector2d((i+1)*mySim->gridSpacing().x(),(j+1)*mySim->gridSpacing().y());
+
+      gridVertexPositions = 2.0*gridVertexPositions - 1.0*MatrixXd::Ones(4,2);
+
+      // now fill in the buffer by throwing the vertex coordinates in there
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx] = gridVertexPositions(0,0);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+1] = gridVertexPositions(0,1);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+2] = gridVertexPositions(1,0);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+3] = gridVertexPositions(1,1);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+4] = gridVertexPositions(2,0);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+5] = gridVertexPositions(2,1);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+6] = gridVertexPositions(1,0);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+7] = gridVertexPositions(1,1);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+8] = gridVertexPositions(2,0);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+9] = gridVertexPositions(2,1);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+10] = gridVertexPositions(3,0);
+      g_vertex_buffer_data_grid[offsetGridVertices + 2*3*2*idx+11] = gridVertexPositions(3,1);
+
+      // figure out what color it should be be
+      Material cellMaterial = mySim->materialAtCell(i,j);
+      Vector3d cellColor;
+
+      if (cellMaterial == Material::solid) cellColor = colorSolid;
+      else if (cellMaterial == Material::fluid) cellColor = colorFluid;
+      else cellColor = colorEmpty;
+
+      // now fill in the buffer by throwing the vertex color in there
+      for (int k=0; k<6; k++) {
+        g_vertex_buffer_data_grid[offsetGridColors + 2*3*3*idx + 3*k] = cellColor(0);
+        g_vertex_buffer_data_grid[offsetGridColors + 2*3*3*idx + 3*k+1] = cellColor(1);
+        g_vertex_buffer_data_grid[offsetGridColors + 2*3*3*idx + 3*k+2] = cellColor(2);
+      }
+    }
+  }
+  // bind vertex buffer
+	GLuint vertexBufferGrid;
+	glGenBuffers(1, &vertexBufferGrid);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBufferGrid);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data_grid), g_vertex_buffer_data_grid, GL_DYNAMIC_DRAW);
+
+  // 1st attribute buffer : vertex positions
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferGrid);
+  glVertexAttribPointer(
+     0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+     2,                  // size
+     GL_FLOAT,           // type
+     GL_FALSE,           // normalized?
+     0,                  // stride
+     (void*)0            // array buffer offset
+  );
+
+  // 2nd attribute buffer : vertex colors
+  glEnableVertexAttribArray(1);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexBufferGrid);
+  glVertexAttribPointer(
+    1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(GL_FLOAT)*offsetGridColors)
+  );
+
+  // Draw Points
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glPointSize(10.0);
+  glEnable(GL_BLEND);
+  glUseProgram(programID);
+  glDrawArrays(GL_TRIANGLES, 0, mySim->nGridCells()*2*3);
+  glDisable(GL_BLEND);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+
+
+
+
+
+
+  // setup vertex buffer data
+  GLfloat g_vertex_buffer_data[mySim->nParticles()*2 + mySim->nParticles()*3];
+  int offsetPositions = 0;
+  int offsetColors = mySim->nParticles()*2;
+  for (int i=0; i<mySim->nParticles(); i++) {
+    // positions
+    g_vertex_buffer_data[offsetPositions + 2*i] = ((GLfloat)mySim->particlePosition(i).x()*2.0f) - 1.0f;
+    g_vertex_buffer_data[offsetPositions + 2*i+1] = ((GLfloat)mySim->particlePosition(i).y()*2.0f) - 1.0f;
+
+    // colors
+    g_vertex_buffer_data[offsetColors + 3*i] = ((GLfloat)mySim->particleSpeed(i));
+    g_vertex_buffer_data[offsetColors + 3*i+1] = 1.0f;
+    g_vertex_buffer_data[offsetColors + 3*i+2] = 1.0f;
+  }
+  // bind vertex buffer
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_DYNAMIC_DRAW);
+
+  // 1st attribute buffer : vertex positions
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glVertexAttribPointer(
+     0,                  // attribute 0. No particular reason for 0, but must match the layout in the shader.
+     2,                  // size
+     GL_FLOAT,           // type
+     GL_FALSE,           // normalized?
+     0,                  // stride
+     (void*)0            // array buffer offset
+  );
+
+  // 2nd attribute buffer : vertex colors
+  glEnableVertexAttribArray(1);
+  glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+  glVertexAttribPointer(
+    1, 3, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(GL_FLOAT)*offsetColors)
+  );
+
+  // Draw Points
+  //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glPointSize(10.0);
+  glEnable(GL_BLEND);
+  glUseProgram(programID);
+  glDrawArrays(GL_POINTS, 0, mySim->nParticles());
+  glDisable(GL_BLEND);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+
+	// Swap buffers
+	glfwSwapBuffers(window);
 }

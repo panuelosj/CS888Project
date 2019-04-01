@@ -33,17 +33,27 @@ public:
 
 private:
   void _advectRalstonRK3();
+  void _detectAndResolveSolidCollisions();
   void _updateMaterialField();
 
   // INPUT VARIABLES
-  double            _dt = 1.0;
+  // timestepping
+  double            _dt               = 1.0;
+  double            _substepTime      = 0.0;
+  double            _dtSubstep        = 1.0;
   // definition of the grid
-  Vector2i          _gridSize        = Vector2i(0, 0);
-  Vector2d          _gridSpacing     = Vector2d(0.0, 0.0);
+  Vector2i          _gridSize         = Vector2i(0, 0);
+  Vector2d          _gridSpacing      = Vector2d(0.0, 0.0);
+  unsigned int      _nParticles       = 0;
   // datastructures for our actual current state
   MACgridVelocity   *_velocityField;    // velocities
   MACgridVelocity   *_velocityFieldOld; // velocities at the start of the timestep
   MaterialGrid      *_materialField;    // voxel grid identifier
   Particles         *_particles;        // particle data
   GridToParticle    *_gridToParticle;   // grid to particle interpolation operator
+  // temporary state datastructures
+  MatrixXd          _pOld;              // positions at the start of a substep
+  MatrixXd          _pNew;              // positions at the end of a substep
+  MatrixXd          _vOld;              // velocities at the start of a substep
+  MatrixXd          _vNew;              // velocities at the end of a substep
 };

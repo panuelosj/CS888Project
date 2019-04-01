@@ -107,6 +107,10 @@ Vector2d Particles::particleVelocity(unsigned int p) {
   return _velocities.row(p);
 }
 
+double Particles::particleSpeed(unsigned int p) {
+  return sqrt(_velocities(p,0)*_velocities(p,0) + _velocities(p,1)*_velocities(p,1));
+}
+
 // =============================================================================
 // ------------------------- DATA WRITES ---------------------------------------
 // =============================================================================

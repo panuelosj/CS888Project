@@ -25,6 +25,7 @@ public:
   Vector2i particleToGridIndex(unsigned int p);
   Vector2i positionToGridIndex(Vector2d p);
   Vector2d particleVelocity(unsigned int p);
+  double particleSpeed(unsigned int p);
   // DATA WRITES
   void setParticlePosition(unsigned int idx, Vector2d newPosition);
   void setParticleVelocity(unsigned int idx, Vector2d newVelocity);

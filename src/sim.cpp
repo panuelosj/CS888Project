@@ -61,9 +61,32 @@ void Sim::setBlockToMaterial(unsigned int i, unsigned int j, unsigned int p, uns
 int Sim::nParticles() {
   return _particles->nParticles();
 }
+
+int Sim::nGridCells() {
+  return _gridSize(0)*_gridSize(1);
+}
+
+Vector2i Sim::gridSize() {
+  return _gridSize;
+}
+
+Vector2d Sim::gridSpacing() {
+  return _gridSpacing;
+}
+
+Material Sim::materialAtCell(unsigned int i, unsigned int j) {
+  return _materialField->material(i,j);
+}
+
 Vector2d Sim::particlePosition(unsigned int idx) {
   return _particles->particleToWorldspace(idx);
 }
+
+double Sim::particleSpeed(unsigned int idx) {
+  return _particles->particleSpeed(idx);
+}
+
+
 
 // ########  ########  #### ##     ##    ###    ######## ########
 // ##     ## ##     ##  ##  ##     ##   ## ##      ##    ##
@@ -91,13 +114,13 @@ void Sim::_update() {
 
   _updateVelocityField();
 
-    std::cout << "Before Projection U: " << std::endl << _velocityField->U().transpose().colwise().reverse() << std::endl;
-    std::cout << "Before Projection V: " << std::endl << _velocityField->V().transpose().colwise().reverse() << std::endl;
+  //std::cout << "Before Projection U: " << std::endl << _velocityField->U().transpose().colwise().reverse() << std::endl;
+  //std::cout << "Before Projection V: " << std::endl << _velocityField->V().transpose().colwise().reverse() << std::endl;
 
   _updatePressureField();
 
-    std::cout << "After Projection U: " << std::endl << _velocityField->U().transpose().colwise().reverse() << std::endl;
-    std::cout << "After Projection V: " << std::endl << _velocityField->V().transpose().colwise().reverse() << std::endl;
+  //std::cout << "After Projection U: " << std::endl << _velocityField->U().transpose().colwise().reverse() << std::endl;
+  //std::cout << "After Projection V: " << std::endl << _velocityField->V().transpose().colwise().reverse() << std::endl;
 
   //_gridToParticleTransfer();
   //std::cout << "NewParticleVelocities: " << std::endl;

@@ -30,9 +30,14 @@ public:
   void setBodyAcceleration(Vector2d b);
   void setBlockToMaterial(unsigned int i, unsigned int j, unsigned int p, unsigned int q, Material newMaterial);
 
-  // utilities needed
+  // DATA READS
   int nParticles();
+  int nGridCells();
+  Vector2i gridSize();
+  Vector2d gridSpacing();
+  Material materialAtCell(unsigned int i, unsigned int j);
   Vector2d particlePosition(unsigned int idx);
+  double particleSpeed(unsigned int idx);
 
   // definition of grid
   Vector2i            _gridSize = Vector2i(0, 0);
