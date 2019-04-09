@@ -30,6 +30,7 @@ public:
   void interpolateVelocities(MatrixXd *positions, MatrixXd *velocities, MatrixXd *retval);
   // PARTICLE INDEX INTERPOLATION OPERATORS
   Vector2d interpolateOneVelocity(unsigned int idx);
+  Vector2d interpolateOneVelocityPIC(Vector2d p, Vector2d v);
   void interpolateVelocities(MatrixXd *retval);
   void transfer();
 

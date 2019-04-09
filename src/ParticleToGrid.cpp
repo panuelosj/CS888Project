@@ -52,6 +52,10 @@ void ParticleToGrid::transfer() {
   // need to be normalized by the sum of kernel weights
   _normalize();
 
+  // now we need to extrapolate to fill the field with valid velocities
+  // note that we need this to get a correct deltaV field for FLIP
+  _velocityField->extrapolateVelocities();
+
   // now to enforce free-slip conditions, we need to set the correct boundary
   // velocities to zero:
   //_setBoundaryVelocities();
@@ -124,10 +128,14 @@ void ParticleToGrid::_normalize() {
       // make sure there was actually stuff saved as a weight
       if (_weights->U(i,j) >= D_EPSILON) {
         _velocityField->divideU(i,j, _weights->U(i,j));
+        // set this to valid since we actually had stuff here
+        _velocityField->setUValid(i,j, 1);
       } else {
         // there were no particles accumulated onto this face, so just set the
         // velocity to zero to be safe
         _velocityField->setU(i,j, 0.0);
+        // and set it to invalid
+        _velocityField->setUValid(i,j, 0);
       }
     }
   }
@@ -138,10 +146,13 @@ void ParticleToGrid::_normalize() {
       // make sure there was actually stuff saved as a weight
       if (_weights->V(i,j) >= D_EPSILON) {
         _velocityField->divideV(i,j, _weights->V(i,j));
+        // set this to valid since we actually had stuff here
+        _velocityField->setVValid(i,j, 1);
       } else {
         // there were no particles accumulated onto this face, so just set the
         // velocity to zero to be safe
         _velocityField->setV(i,j, 0.0);
+        _velocityField->setVValid(i,j, 0);
       }
     }
   }

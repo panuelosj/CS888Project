@@ -59,6 +59,8 @@ void PressureProjection::project() {
   _pressureGradientUpdate();          // use the computed pressure to update
                                         // the velocities to give a divergence
                                         // free field.
+  _velocityField->extrapolateVelocities();  // extrapolate velocities to the unknown
+                                              // regions
 }
 
 
@@ -272,11 +274,15 @@ void PressureProjection::_pressureGradientUpdate() {
 
       // update u
       if (_materialField->isFluid(i-1, j) || _materialField->isFluid(i,j)) {
+        // set the velocity sample to valid
+        _velocityField->setUValid(i,j,1);
         if (_materialField->isSolid(i-1, j) || _materialField->isSolid(i,j))
           _velocityField->setU(i, j, _usolid);
         else
           _velocityField->subU( i, j, scaleX*(pV-pVX) );
       } else {
+        // set the velocity sample to invalid
+        _velocityField->setUValid(i,j,0);
         _velocityField->setU(i, j, _unknownVelocity);
       }
     }
@@ -304,11 +310,15 @@ void PressureProjection::_pressureGradientUpdate() {
 
       // update v
       if (_materialField->isFluid(i, j-1) || _materialField->isFluid(i,j)) {
+        // set the velocity sample to valid
+        _velocityField->setVValid(i,j,1);
         if (_materialField->isSolid(i, j-1) || _materialField->isSolid(i,j))
           _velocityField->setV(i, j, _vsolid);
         else
             _velocityField->subV( i, j, scaleY*(pV-pVY) );
       } else {
+        // set the velocity sample to invalid
+        _velocityField->setVValid(i,j,0);
         _velocityField->setV(i, j, _unknownVelocity);
       }
     }

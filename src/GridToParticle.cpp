@@ -1,4 +1,5 @@
 #include "GridToParticle.h"
+#include <iostream>
 
 //  ######   #######  ##    ##  ######  ######## ########
 // ##    ## ##     ## ###   ## ##    ##    ##    ##     ##
@@ -24,6 +25,25 @@ GridToParticle::GridToParticle(GridToParticleInputs in) :
   _velocityFieldDelta = new MACgridVelocity( _gridSize, _gridSpacing );
   _velocityFieldDelta->copyInData(_velocityField);
   _velocityFieldDelta->subAllData(_velocityFieldOld);
+
+
+  std::cout << std::endl << "old U:" << std::endl;
+  _velocityFieldOld->printU();
+  std::cout << std::endl << "old V:" << std::endl;
+  _velocityFieldOld->printV();
+
+  std::cout << std::endl << "new U:" << std::endl;
+  _velocityField->printU();
+  std::cout << std::endl << "new V:" << std::endl;
+  _velocityField->printV();
+
+  // let's print it
+  std::cout << std::endl << "delta U:" << std::endl;
+  _velocityFieldDelta->printU();
+  std::cout << std::endl << "delta V:" << std::endl;
+  _velocityFieldDelta->printV();
+
+
 }
 
 GridToParticle::~GridToParticle() {
@@ -71,6 +91,24 @@ Vector2d GridToParticle::interpolateOneVelocity(Vector2d p, Vector2d v) {
   // refer to Bridson p118
   Vector2d vNew = PIC_FLIP_ALPHA*interpolatedPIC
                   + (1.0-PIC_FLIP_ALPHA)*(vOld + interpolatedFLIP);
+
+  return vNew;
+}
+
+Vector2d GridToParticle::interpolateOneVelocityPIC(Vector2d p, Vector2d v) {
+  // This function performs the PIC/FLIP interpolation for a single position p
+
+  // need p's referencespace position (within its own cell)
+  Vector2d referenceSpacePosition = _particles->positionToReferencespace(p);
+  // need the particle's gridspace position
+  Vector2i cellIndex = _particles->positionToGridIndex(p);
+
+  // interpolate velocity (PIC)
+  Vector2d interpolatedPIC = _interpolate(_velocityField,
+                                          cellIndex,
+                                          referenceSpacePosition);
+  // refer to Bridson p118
+  Vector2d vNew = interpolatedPIC;
 
   return vNew;
 }

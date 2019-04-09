@@ -43,6 +43,7 @@ private:
   void _translateMatrixToSparseEigen();
   void _solve();
   void _pressureGradientUpdate();
+  void _extrapolateVelocities();
 
   // CONSTANTS
   double _usolid = SOLID_VELOCITY_X;

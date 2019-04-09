@@ -1,8 +1,11 @@
 #include <Eigen/Core>
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <pngwriter.h>
 #include <chrono>
 #include <thread>
 
@@ -27,6 +30,7 @@ Vector3d colorEmpty = Vector3d(0.68,1.0,0.93);
 int startOpenGL();
 void endOpenGL();
 void plotOpenGL();
+void savePNG(unsigned int height, unsigned int width, char* filename);
 
 int main()
 {
@@ -81,14 +85,23 @@ int main()
   //mySim->setBlockToMaterial(0,10,24,1,Material::solid);
 
   // 16x16 maze
-  //mySim->setBlockToMaterial(1,11,10,5,Material::fluid);
-  //mySim->setBlockToMaterial(0,10,12,1,Material::solid);
-  //mySim->setBlockToMaterial(4,6,12,1,Material::solid);
+  const char* filenameBase = "Maze16x16/Maze16x16";
+  mySim->setBlockToMaterial(1,11,10,5,Material::fluid);
+  mySim->setBlockToMaterial(0,10,12,1,Material::solid);
+  mySim->setBlockToMaterial(4,6,12,1,Material::solid);
 
   // 32x32 maze
+  //const char* filenameBase = "Maze32x32_PICFLIP0.1/Maze32x32";
+  //const char* filenameBase = "Maze32x32_FLIP/Maze32x32";
   //mySim->setBlockToMaterial(2,21,20,11,Material::fluid);
   //mySim->setBlockToMaterial(0,20,24,1,Material::solid);
   //mySim->setBlockToMaterial(8,12,24,1,Material::solid);
+
+  // 64x64 maze
+  //const char* filenameBase = "Maze64x64_PICFLIP0.1/Maze64x64";
+  //mySim->setBlockToMaterial(4,42,40,22,Material::fluid);
+  //mySim->setBlockToMaterial(0,40,48,2,Material::solid);
+  //mySim->setBlockToMaterial(16,24,48,2,Material::solid);
 
   mySim->init();
   std::cout << "Starting sim with grid size: "
@@ -114,13 +127,32 @@ int main()
     glfwPollEvents();
   }
 
+  unsigned int nFrame = 0;
+
   // start the simulation loop
-  while (true) {
+  while (mySim->time() < 1.5) {
+  //while (true) {
     // advance in time
     mySim->update(0.01);
 
+    // do OpenGL
     plotOpenGL();
-    //std::this_thread::sleep_for(std::chrono::milliseconds(50));
+
+    // then save the image
+    std::ostringstream filenameStream;
+    filenameStream << "pngs/" << filenameBase << "_" << std::setfill('0') << std::setw(5) << nFrame << ".png";
+    std::string filename = filenameStream.str();
+    savePNG(SCREEN_WIDTH, SCREEN_HEIGHT, &filename[0]);
+
+    // advance the frame counter
+    nFrame++;
+
+  }
+
+
+  while( glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS ) {
+    plotOpenGL();
+    glfwPollEvents();
   }
 
   endOpenGL();
@@ -128,6 +160,14 @@ int main()
   return 0;
 }
 
+
+//  ######  ########    ###    ########  ########     #######  ########  ######## ##    ##  ######   ##
+// ##    ##    ##      ## ##   ##     ##    ##       ##     ## ##     ## ##       ###   ## ##    ##  ##
+// ##          ##     ##   ##  ##     ##    ##       ##     ## ##     ## ##       ####  ## ##        ##
+//  ######     ##    ##     ## ########     ##       ##     ## ########  ######   ## ## ## ##   #### ##
+//       ##    ##    ######### ##   ##      ##       ##     ## ##        ##       ##  #### ##    ##  ##
+// ##    ##    ##    ##     ## ##    ##     ##       ##     ## ##        ##       ##   ### ##    ##  ##
+//  ######     ##    ##     ## ##     ##    ##        #######  ##        ######## ##    ##  ######   ########
 
 int startOpenGL() {
   // Start GL Window
@@ -327,4 +367,37 @@ void plotOpenGL() {
 
 	// Swap buffers
 	glfwSwapBuffers(window);
+}
+
+
+void savePNG(unsigned int height, unsigned int width, char* filename) {
+  GLfloat* OpenGLimage = new GLfloat[height*width*3];
+  glReadPixels(0, 0, width, height, GL_RGB, GL_FLOAT, OpenGLimage);
+  pngwriter PNG(width, height, 1.0, filename);
+
+  size_t x = 1;   // start the top and leftmost point of the window
+  size_t y = 1;
+  double R, G, B;
+  for(size_t i=0; i<height*width*3; i++)
+  {
+        switch(i%3) //the OpenGLimage array look like [R1, G1, B1, R2, G2, B2,...]
+       {
+             case 2:
+                   B = (double) OpenGLimage[i]; break;
+             case 1:
+                   G = (double) OpenGLimage[i]; break;
+             case 0:
+                   R = (double) OpenGLimage[i];
+                   PNG.plot(x, y, R, G, B);
+                   if( x == width )
+                   {
+                         x=1;
+                         y++;
+                    }
+                    else
+                    { x++; }
+                    break;
+       }
+  }
+  PNG.close();
 }

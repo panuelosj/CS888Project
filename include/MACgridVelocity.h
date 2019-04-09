@@ -13,12 +13,15 @@ public:
   ~MACgridVelocity();
 
   void update(float timestep);
+  void extrapolateVelocities();
 
   // DATA READS
   double U(unsigned int i, unsigned int j);
   double V(unsigned int i, unsigned int j);
   MatrixXd U();
   MatrixXd V();
+  void printU();
+  void printV();
   Vector2d gridIndexToWorldspaceU(unsigned int i, unsigned int j);
   Vector2d gridIndexToWorldspaceV(unsigned int i, unsigned int j);
   Vector2d gridIndexToWorldspaceU(Vector2i g);
@@ -37,6 +40,8 @@ public:
   void subV(unsigned int i, unsigned int j, double subV);
   void divideU(unsigned int i, unsigned int j, double divisorU);
   void divideV(unsigned int i, unsigned int j, double divisorV);
+  void setUValid(unsigned int i, unsigned int j, double newUValid);
+  void setVValid(unsigned int i, unsigned int j, double newVValid);
   void setBoundaryVelocities();
   // body forces
   void setBodyAcceleration(Vector2d b);
@@ -45,6 +50,7 @@ public:
 private:
   void _update();
   void _applyBodyForces();
+  void _extrapolateVelocities();
   // returns true if a cell is in the valid grid range
   inline bool _isInRangeU(unsigned int i, unsigned int j);
   inline bool _isInRangeV(unsigned int i, unsigned int j);
@@ -59,4 +65,6 @@ private:
   // data
   MatrixXd _u;
   MatrixXd _v;
+  MatrixXi _uValid;
+  MatrixXi _vValid;
 };

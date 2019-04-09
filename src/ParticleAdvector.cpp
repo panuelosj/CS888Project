@@ -1,5 +1,8 @@
 #include "ParticleAdvector.h"
 
+#include <iostream>
+#include <float.h>
+
 //  ######   #######  ##    ##  ######  ######## ########
 // ##    ## ##     ## ###   ## ##    ##    ##    ##     ##
 // ##       ##     ## ####  ## ##          ##    ##     ##
@@ -44,37 +47,49 @@ ParticleAdvector::~ParticleAdvector() {
 void ParticleAdvector::advect() {
   // master function that calls variations of the particle advection scheme
 
+  // setup our substeps
+  _substepTime = 0.0;
+  bool finishedFullstep = false;
+
+  unsigned int nIterations = 0;
+  double dtSubstepMin = DBL_MAX;
+
+  while (!finishedFullstep) {
     _pOld = _particles->positions();
     _vOld = _particles->velocities();
 
-    // setup our substeps
-    _substepTime = 0.0;
-    bool finishedFullstep = false;
+    // find the max substep size
+    MatrixXd tempVelocity = MatrixXd(_nParticles, 2);
+    _gridToParticle->interpolateVelocities(&_pOld, &_vOld, &tempVelocity);
+    // get max speed
+      // NOTE THAT WE CAN'T JUST CALL _particle->maxSpeed() HERE SINCE WE INTERPOLATED JUST NOW
+      // AND WE DON'T WANT TO EDIT THE PARTICLE VELOCITIES UNTIL THE ACTUAL ADVECT STEP
+    double maxSpeed = sqrt(((tempVelocity.col(0)).cwiseAbs2() + (tempVelocity.col(1)).cwiseAbs2()).maxCoeff());
+    // set substep dt to the longest allowable by CFL condition
+    _dtSubstep = sqrt(_gridSpacing(0)*_gridSpacing(1))/(maxSpeed+D_EPSILON);
 
-    while (!finishedFullstep) {
-      // find the max substep size
-      MatrixXd tempVelocity = MatrixXd(_nParticles, 2);
-      _gridToParticle->interpolateVelocities(&_pOld, &_vOld, &tempVelocity);
-      // get max speed
-        // NOTE THAT WE CAN'T JUST CALL _particle->maxSpeed() HERE SINCE WE INTERPOLATED JUST NOW
-        // AND WE DON'T WANT TO EDIT THE PARTICLE VELOCITIES UNTIL THE ACTUAL ADVECT STEP
-      double maxSpeed = sqrt(((tempVelocity.col(0)).cwiseAbs2() + (tempVelocity.col(1)).cwiseAbs2()).maxCoeff());
-      // set substep dt to the longest allowable by CFL condition
-      _dtSubstep = sqrt(_gridSpacing(0)*_gridSpacing(1))/(maxSpeed+D_EPSILON);
-
-      if (_substepTime + _dtSubstep >= _dt) {
-        _dtSubstep = _dt - _substepTime;
-        finishedFullstep = true;
-      } else if (_substepTime + 2*_dtSubstep >= _dt) {
-        _dtSubstep = 0.5*(_dt - _substepTime);
-      }
-
-      #ifdef ADVECT_RALSTONRK3
-      _advectRalstonRK3();
-      #endif
-
-      _substepTime += _dtSubstep;
+    if (_substepTime + _dtSubstep >= _dt) {
+      _dtSubstep = _dt - _substepTime;
+      finishedFullstep = true;
+    } else if (_substepTime + 2*_dtSubstep >= _dt) {
+      _dtSubstep = 0.5*(_dt - _substepTime);
     }
+
+    #ifdef ADVECT_RALSTONRK3
+    _advectRalstonRK3();
+    #endif
+
+    _substepTime += _dtSubstep;
+    nIterations++;
+    if (_dtSubstep < dtSubstepMin)
+      dtSubstepMin = _dtSubstep;
+  }
+
+#if defined LOG_PARTICLE_ADVECTION && !defined LOG_QUIET
+  std::cout << "\t\tNumber of Substeps Taken: " << nIterations << std::endl;
+  std::cout << "\t\tSmallest Substep Taken: " << dtSubstepMin << std::endl;
+#endif
+
 }
 
 
@@ -185,6 +200,11 @@ void ParticleAdvector::_detectAndResolveSolidCollisions() {
 
       // now update the gridIndex to see if the particle is still stuck in a solid
       gridIndex = _particles->particleToGridIndex(idx);
+
+      // do a full PIC interpolation of this single particle so it doesn't keep
+        // its velocity
+      Vector2d newVel = _gridToParticle->interpolateOneVelocityPIC(_particles->particleToWorldspace(idx), _particles->particleVelocity(idx));
+      _particles->setParticleVelocity(idx, newVel);
 
       iterCount++;
     }
