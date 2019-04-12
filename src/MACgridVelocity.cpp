@@ -78,6 +78,23 @@ MatrixXd MACgridVelocity::U() {
 MatrixXd MACgridVelocity::V() {
   return _v;
 }
+// reading matrix values
+int MACgridVelocity::uValid(unsigned int i, unsigned int j) {
+  if (!_isInRangeU(i,j)) {
+    return 0;
+  }
+  else {
+    return _uValid(i, j);
+  }
+}
+int MACgridVelocity::vValid(unsigned int i, unsigned int j) {
+  if (!_isInRangeV(i,j)) {
+    return 0;
+  }
+  else {
+    return _vValid(i, j);
+  }
+}
 
 // printing them
 void MACgridVelocity::printU() {
@@ -152,6 +169,14 @@ void MACgridVelocity::setU(unsigned int i, unsigned int j, double newU) {
 void MACgridVelocity::setV(unsigned int i, unsigned int j, double newV) {
   assert(_isInRangeV(i,j));
   _v(i,j) = newV;
+}
+void MACgridVelocity::setU(MatrixXd newU) {
+  assert(newU.rows() == _u.rows() && newU.cols() == _u.cols());
+  _u = newU;
+}
+void MACgridVelocity::setV(MatrixXd newV) {
+  assert(newV.rows() == _v.rows() && newV.cols() == _v.cols());
+  _v = newV;
 }
 void MACgridVelocity::addU(unsigned int i, unsigned int j, double addU) {
   assert(_isInRangeU(i,j));

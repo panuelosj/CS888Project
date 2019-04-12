@@ -20,6 +20,8 @@ public:
   double V(unsigned int i, unsigned int j);
   MatrixXd U();
   MatrixXd V();
+  int uValid(unsigned int i, unsigned int j);
+  int vValid(unsigned int i, unsigned int j);
   void printU();
   void printV();
   Vector2d gridIndexToWorldspaceU(unsigned int i, unsigned int j);
@@ -34,6 +36,8 @@ public:
   void subAllData(MACgridVelocity* dataIn);
   void setU(unsigned int i, unsigned int j, double newU);
   void setV(unsigned int i, unsigned int j, double newV);
+  void setU(MatrixXd newU);
+  void setV(MatrixXd newV);
   void addU(unsigned int i, unsigned int j, double addU);
   void addV(unsigned int i, unsigned int j, double addV);
   void subU(unsigned int i, unsigned int j, double subU);

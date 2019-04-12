@@ -25,8 +25,7 @@ GridToParticle::GridToParticle(GridToParticleInputs in) :
   _velocityFieldDelta = new MACgridVelocity( _gridSize, _gridSpacing );
   _velocityFieldDelta->copyInData(_velocityField);
   _velocityFieldDelta->subAllData(_velocityFieldOld);
-
-
+/*
   std::cout << std::endl << "old U:" << std::endl;
   _velocityFieldOld->printU();
   std::cout << std::endl << "old V:" << std::endl;
@@ -42,7 +41,7 @@ GridToParticle::GridToParticle(GridToParticleInputs in) :
   _velocityFieldDelta->printU();
   std::cout << std::endl << "delta V:" << std::endl;
   _velocityFieldDelta->printV();
-
+*/
 
 }
 

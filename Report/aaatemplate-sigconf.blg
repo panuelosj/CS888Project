@@ -1,0 +1,60 @@
+This is BibTeX, Version 0.99d (TeX Live 2017/Arch Linux)
+Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+The top-level auxiliary file: aaatemplate-sigconf.aux
+The style file: ACM-Reference-Format.bst
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Reallocated wiz_functions (elt_size=8) to 6000 items from 3000.
+Database file #1: aaatemplate.bib
+Repeated entry---line 133 of file aaatemplate.bib
+ : @article{hu2018
+ :                ,
+I'm skipping whatever remains of this entry
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Reallocated singl_function (elt_size=8) to 100 items from 50.
+Warning--empty address in bridson2015
+Warning--empty publisher in JiangCourse
+Warning--empty address in JiangCourse
+Warning--empty publisher in muller2003
+Warning--empty address in muller2003
+You've used 17 entries,
+            5758 wiz_defined-function locations,
+            1420 strings with 17994 characters,
+and the built_in function-call counts, 20617 in all, are:
+= -- 2899
+> -- 763
+< -- 0
++ -- 246
+- -- 268
+* -- 1437
+:= -- 2059
+add.period$ -- 87
+call.type$ -- 17
+change.case$ -- 121
+chr.to.int$ -- 17
+cite$ -- 22
+duplicate$ -- 1707
+empty$ -- 1200
+format.name$ -- 320
+if$ -- 5160
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 60
+newline$ -- 174
+num.names$ -- 136
+pop$ -- 613
+preamble$ -- 1
+purify$ -- 273
+quote$ -- 0
+skip$ -- 589
+stack$ -- 0
+substring$ -- 1465
+swap$ -- 187
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 327
+warning$ -- 5
+while$ -- 134
+width$ -- 0
+write$ -- 329
+(There was 1 error message)

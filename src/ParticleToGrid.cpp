@@ -35,8 +35,6 @@ ParticleToGrid::~ParticleToGrid() {
 // ##        ##     ## ##     ## ##        ##  ##    ##
 // ##         #######  ########  ######## ####  ######
 
-// TODO: MAKE SURE TO UPDATE THE MATERIAL MATRIX YOU DORK!
-
 void ParticleToGrid::transfer() {
   // first reset the velocity field
   _velocityField->clear();

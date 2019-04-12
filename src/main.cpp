@@ -49,8 +49,8 @@ int main()
   }
 
   // Initialize our simulation
-  Vector2i gridSize(16, 16);
-  Vector2d gridLengths(1.0, 1.0);
+  Vector2i gridSize(32, 64);
+  Vector2d gridLengths(0.5, 1.0);
   Vector2d gridSpacing = gridLengths.cwiseQuotient(gridSize.cast<double>());
   mySim = new Sim(gridSize, gridSpacing);
   mySim->setBodyAcceleration(Vector2d(GRAVITY_X, GRAVITY_Y));
@@ -61,8 +61,12 @@ int main()
   //mySim->setBlockToMaterial(0,0,16,8,Material::fluid);
   // 16x16 half fluid drop
   //mySim->setBlockToMaterial(0,6,16,8,Material::fluid);
-  // 16x16 block fluid drop
-  //mySim->setBlockToMaterial(4,6,8,8,Material::fluid);
+
+  // 32x32 block fluid drop
+  //const char* filenameBase = "BoxDrop32x32_PICFLIP0.1/BoxDrop32x32";
+  //const char* filenameBase = "BoxDrop32x32_FLIP/BoxDrop32x32";
+  //const char* filenameBase = "BoxDrop32x32_PIC/BoxDrop32x32";
+  //mySim->setBlockToMaterial(8,12,16,16,Material::fluid);
 
   // 16x16 dam break with box
   //mySim->setBlockToMaterial(4,0,8,10,Material::fluid);
@@ -73,8 +77,15 @@ int main()
   //mySim->setBlockToMaterial(0,0,8,15,Material::fluid);
 
   // 32x32 dam break
-  //mySim->setBlockToMaterial(8,0,16,30,Material::fluid);
+  //const char* filenameBase = "DamBreak32x32_PICFLIP0.1/DamBreak32x32";
+  //const char* filenameBase = "DamBreak32x32_FLIP/DamBreak32x32";
+  //const char* filenameBase = "DamBreak32x32_PIC/DamBreak32x32";
   //mySim->setBlockToMaterial(0,0,16,30,Material::fluid);
+
+  //const char* filenameBase = "DamBreakB32x32_PICFLIP0.1/DamBreakB32x32";
+  //const char* filenameBase = "DamBreakB32x32_FLIP/DamBreak32x32";
+  //const char* filenameBase = "DamBreakB32x32_PIC/DamBreak32x32";
+  //mySim->setBlockToMaterial(8,0,16,30,Material::fluid);
 
   // 16x16 plank
   //mySim->setBlockToMaterial(2,6,8,8,Material::fluid);
@@ -85,14 +96,15 @@ int main()
   //mySim->setBlockToMaterial(0,10,24,1,Material::solid);
 
   // 16x16 maze
-  const char* filenameBase = "Maze16x16/Maze16x16";
-  mySim->setBlockToMaterial(1,11,10,5,Material::fluid);
-  mySim->setBlockToMaterial(0,10,12,1,Material::solid);
-  mySim->setBlockToMaterial(4,6,12,1,Material::solid);
+  //const char* filenameBase = "Maze16x16/Maze16x16";
+  //mySim->setBlockToMaterial(1,11,10,5,Material::fluid);
+  //mySim->setBlockToMaterial(0,10,12,1,Material::solid);
+  //mySim->setBlockToMaterial(4,6,12,1,Material::solid);
 
   // 32x32 maze
   //const char* filenameBase = "Maze32x32_PICFLIP0.1/Maze32x32";
   //const char* filenameBase = "Maze32x32_FLIP/Maze32x32";
+  //const char* filenameBase = "Maze32x32_PIC/Maze32x32";
   //mySim->setBlockToMaterial(2,21,20,11,Material::fluid);
   //mySim->setBlockToMaterial(0,20,24,1,Material::solid);
   //mySim->setBlockToMaterial(8,12,24,1,Material::solid);
@@ -102,6 +114,44 @@ int main()
   //mySim->setBlockToMaterial(4,42,40,22,Material::fluid);
   //mySim->setBlockToMaterial(0,40,48,2,Material::solid);
   //mySim->setBlockToMaterial(16,24,48,2,Material::solid);
+
+  // 64x64 complex
+  //const char* filenameBase = "Complex64x64_PICFLIP0.1/Complex64x64";
+  //mySim->setBlockToMaterial(4,42,20,20,Material::fluid);
+  //mySim->setBlockToMaterial(9,13,1,1,Material::solid);
+  //mySim->setBlockToMaterial(14,32,2,1,Material::solid);
+  //mySim->setBlockToMaterial(18,5,7,4,Material::solid);
+  //mySim->setBlockToMaterial(2,27,5,3,Material::solid);
+  //mySim->setBlockToMaterial(32,0,16,1,Material::solid);
+  //mySim->setBlockToMaterial(33,1,15,1,Material::solid);
+  //mySim->setBlockToMaterial(34,2,14,1,Material::solid);
+  //mySim->setBlockToMaterial(35,3,13,1,Material::solid);
+  //mySim->setBlockToMaterial(36,4,12,1,Material::solid);
+  //mySim->setBlockToMaterial(37,5,11,1,Material::solid);
+  //mySim->setBlockToMaterial(38,6,10,1,Material::solid);
+  //mySim->setBlockToMaterial(39,7, 9,1,Material::solid);
+  //mySim->setBlockToMaterial(40,8, 8,1,Material::solid);
+  //mySim->setBlockToMaterial(41,9, 7,1,Material::solid);
+  //mySim->setBlockToMaterial(42,10,6,1,Material::solid);
+  //mySim->setBlockToMaterial(43,11,5,1,Material::solid);
+  //mySim->setBlockToMaterial(44,12,4,1,Material::solid);
+  //mySim->setBlockToMaterial(45,13,3,1,Material::solid);
+  //mySim->setBlockToMaterial(46,14,2,1,Material::solid);
+  //mySim->setBlockToMaterial(47,15,1,1,Material::solid);
+
+  const char* filenameBase = "Cone64x32_PICFLIP0.1/Cone64x32";
+  mySim->setBlockToMaterial(6,42,20,20,Material::fluid);
+  mySim->setBlockToMaterial(0,30,32,10,Material::solid);
+  mySim->setBlockToMaterial(14,30,4,1,Material::empty);
+  mySim->setBlockToMaterial(13,31,6,1,Material::empty);
+  mySim->setBlockToMaterial(12,32,8,1,Material::empty);
+  mySim->setBlockToMaterial(11,33,10,1,Material::empty);
+  mySim->setBlockToMaterial(10,34,12,1,Material::empty);
+  mySim->setBlockToMaterial(9,35,14,1,Material::empty);
+  mySim->setBlockToMaterial(8,36,16,1,Material::empty);
+  mySim->setBlockToMaterial(7,37,18,1,Material::empty);
+  mySim->setBlockToMaterial(6,38,20,1,Material::empty);
+  mySim->setBlockToMaterial(5,39,22,1,Material::empty);
 
   mySim->init();
   std::cout << "Starting sim with grid size: "
@@ -130,19 +180,21 @@ int main()
   unsigned int nFrame = 0;
 
   // start the simulation loop
-  while (mySim->time() < 1.5) {
+  while (mySim->time() < 5.0) {
   //while (true) {
     // advance in time
-    mySim->update(0.01);
+    mySim->update(0.001);
 
     // do OpenGL
     plotOpenGL();
 
+#ifdef LOG_SAVE_PNG
     // then save the image
     std::ostringstream filenameStream;
     filenameStream << "pngs/" << filenameBase << "_" << std::setfill('0') << std::setw(5) << nFrame << ".png";
     std::string filename = filenameStream.str();
     savePNG(SCREEN_WIDTH, SCREEN_HEIGHT, &filename[0]);
+#endif
 
     // advance the frame counter
     nFrame++;
@@ -400,4 +452,7 @@ void savePNG(unsigned int height, unsigned int width, char* filename) {
        }
   }
   PNG.close();
+
+  // cleanup
+  delete OpenGLimage;
 }

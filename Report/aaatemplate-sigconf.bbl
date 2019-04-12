@@ -1,0 +1,249 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{00}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{}, \showDOI{}, and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showDOI}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showDOI #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showDOI      \undefined \def \showDOI       #1{#1}\fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[\protect\citeauthoryear{Brackbill and Ruppel}{Brackbill and
+  Ruppel}{1986}]%
+        {brackbill1986}
+\bibfield{author}{\bibinfo{person}{Jeremiah~U Brackbill} {and}
+  \bibinfo{person}{Hans~M Ruppel}.} \bibinfo{year}{1986}\natexlab{}.
+\newblock \showarticletitle{FLIP: A method for adaptively zoned,
+  particle-in-cell calculations of fluid flows in two dimensions}.
+\newblock \bibinfo{journal}{{\em Journal of Computational physics\/}}
+  \bibinfo{volume}{65}, \bibinfo{number}{2} (\bibinfo{year}{1986}),
+  \bibinfo{pages}{314--343}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Bridson}{Bridson}{2015}]%
+        {bridson2015}
+\bibfield{author}{\bibinfo{person}{Robert Bridson}.}
+  \bibinfo{year}{2015}\natexlab{}.
+\newblock \bibinfo{booktitle}{{\em Fluid simulation for computer graphics}}.
+\newblock \bibinfo{publisher}{AK Peters/CRC Press}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Foster and Metaxas}{Foster and
+  Metaxas}{1996}]%
+        {foster1996}
+\bibfield{author}{\bibinfo{person}{Nick Foster} {and} \bibinfo{person}{Dimitri
+  Metaxas}.} \bibinfo{year}{1996}\natexlab{}.
+\newblock \showarticletitle{Realistic animation of liquids}.
+\newblock \bibinfo{journal}{{\em Graphical models and image processing\/}}
+  \bibinfo{volume}{58}, \bibinfo{number}{5} (\bibinfo{year}{1996}),
+  \bibinfo{pages}{471--483}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Fu, Guo, Gast, Jiang, and Teran}{Fu
+  et~al\mbox{.}}{2017}]%
+        {fu2017}
+\bibfield{author}{\bibinfo{person}{Chuyuan Fu}, \bibinfo{person}{Qi Guo},
+  \bibinfo{person}{Theodore Gast}, \bibinfo{person}{Chenfanfu Jiang}, {and}
+  \bibinfo{person}{Joseph Teran}.} \bibinfo{year}{2017}\natexlab{}.
+\newblock \showarticletitle{A polynomial particle-in-cell method}.
+\newblock \bibinfo{journal}{{\em ACM Transactions on Graphics (TOG)\/}}
+  \bibinfo{volume}{36}, \bibinfo{number}{6} (\bibinfo{year}{2017}),
+  \bibinfo{pages}{222}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Gingold and Monaghan}{Gingold and
+  Monaghan}{1977}]%
+        {gingold1977}
+\bibfield{author}{\bibinfo{person}{Robert~A Gingold} {and}
+  \bibinfo{person}{Joseph~J Monaghan}.} \bibinfo{year}{1977}\natexlab{}.
+\newblock \showarticletitle{Smoothed particle hydrodynamics: theory and
+  application to non-spherical stars}.
+\newblock \bibinfo{journal}{{\em Monthly notices of the royal astronomical
+  society\/}} \bibinfo{volume}{181}, \bibinfo{number}{3}
+  (\bibinfo{year}{1977}), \bibinfo{pages}{375--389}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Guennebaud, Jacob, et~al\mbox{.}}{Guennebaud
+  et~al\mbox{.}}{2010}]%
+        {eigen}
+\bibfield{author}{\bibinfo{person}{Ga\"{e}l Guennebaud},
+  \bibinfo{person}{Beno\^{i}t Jacob}, {et~al\mbox{.}}}
+  \bibinfo{year}{2010}\natexlab{}.
+\newblock \bibinfo{title}{Eigen v3}.
+\newblock \bibinfo{howpublished}{http://eigen.tuxfamily.org}.
+  (\bibinfo{year}{2010}).
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Harlow}{Harlow}{1962}]%
+        {harlow1962}
+\bibfield{author}{\bibinfo{person}{Francis~H Harlow}.}
+  \bibinfo{year}{1962}\natexlab{}.
+\newblock \bibinfo{booktitle}{{\em The particle-in-cell method for numerical
+  solution of problems in fluid dynamics}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport}. \bibinfo{institution}{Los
+  Alamos Scientific Lab., N. Mex.}
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Harlow and Welch}{Harlow and Welch}{1965}]%
+        {harlow1965}
+\bibfield{author}{\bibinfo{person}{Francis~H Harlow} {and}
+  \bibinfo{person}{J~Eddie Welch}.} \bibinfo{year}{1965}\natexlab{}.
+\newblock \showarticletitle{Numerical calculation of time-dependent viscous
+  incompressible flow of fluid with free surface}.
+\newblock \bibinfo{journal}{{\em The physics of fluids\/}} \bibinfo{volume}{8},
+  \bibinfo{number}{12} (\bibinfo{year}{1965}), \bibinfo{pages}{2182--2189}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Hu, Fang, Ge, Qu, Zhu, Pradhana, and Jiang}{Hu
+  et~al\mbox{.}}{2018}]%
+        {hu2018}
+\bibfield{author}{\bibinfo{person}{Yuanming Hu}, \bibinfo{person}{Yu Fang},
+  \bibinfo{person}{Ziheng Ge}, \bibinfo{person}{Ziyin Qu},
+  \bibinfo{person}{Yixin Zhu}, \bibinfo{person}{Andre Pradhana}, {and}
+  \bibinfo{person}{Chenfanfu Jiang}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \showarticletitle{A moving least squares material point method with
+  displacement discontinuity and two-way rigid body coupling}.
+\newblock \bibinfo{journal}{{\em ACM Transactions on Graphics (TOG)\/}}
+  \bibinfo{volume}{37}, \bibinfo{number}{4} (\bibinfo{year}{2018}),
+  \bibinfo{pages}{150}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Jiang, Schroeder, Selle, Teran, and
+  Stomakhin}{Jiang et~al\mbox{.}}{2015}]%
+        {jiang2015}
+\bibfield{author}{\bibinfo{person}{Chenfanfu Jiang}, \bibinfo{person}{Craig
+  Schroeder}, \bibinfo{person}{Andrew Selle}, \bibinfo{person}{Joseph Teran},
+  {and} \bibinfo{person}{Alexey Stomakhin}.} \bibinfo{year}{2015}\natexlab{}.
+\newblock \showarticletitle{The affine particle-in-cell method}.
+\newblock \bibinfo{journal}{{\em ACM Transactions on Graphics (TOG)\/}}
+  \bibinfo{volume}{34}, \bibinfo{number}{4} (\bibinfo{year}{2015}),
+  \bibinfo{pages}{51}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Jiang, Schroeder, Teran, Stomakhin, and
+  Selle}{Jiang et~al\mbox{.}}{2016}]%
+        {JiangCourse}
+\bibfield{author}{\bibinfo{person}{Chenfanfu Jiang}, \bibinfo{person}{Craig
+  Schroeder}, \bibinfo{person}{Joseph Teran}, \bibinfo{person}{Alexey
+  Stomakhin}, {and} \bibinfo{person}{Andrew Selle}.}
+  \bibinfo{year}{2016}\natexlab{}.
+\newblock \showarticletitle{The material point method for simulating continuum
+  materials}. In \bibinfo{booktitle}{{\em ACM SIGGRAPH 2016 Courses}}. ACM,
+  \bibinfo{pages}{24}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Lucy}{Lucy}{1977}]%
+        {lucy1977}
+\bibfield{author}{\bibinfo{person}{Leon~B Lucy}.}
+  \bibinfo{year}{1977}\natexlab{}.
+\newblock \showarticletitle{A numerical approach to the testing of the fission
+  hypothesis}.
+\newblock \bibinfo{journal}{{\em The astronomical journal\/}}
+  \bibinfo{volume}{82} (\bibinfo{year}{1977}), \bibinfo{pages}{1013--1024}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{M{\"u}ller, Charypar, and Gross}{M{\"u}ller
+  et~al\mbox{.}}{2003}]%
+        {muller2003}
+\bibfield{author}{\bibinfo{person}{Matthias M{\"u}ller}, \bibinfo{person}{David
+  Charypar}, {and} \bibinfo{person}{Markus Gross}.}
+  \bibinfo{year}{2003}\natexlab{}.
+\newblock \showarticletitle{Particle-based fluid simulation for interactive
+  applications}. In \bibinfo{booktitle}{{\em Proceedings of the 2003 ACM
+  SIGGRAPH/Eurographics symposium on Computer animation}}. Eurographics
+  Association, \bibinfo{pages}{154--159}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Ralston}{Ralston}{1962}]%
+        {ralston1962}
+\bibfield{author}{\bibinfo{person}{Anthony Ralston}.}
+  \bibinfo{year}{1962}\natexlab{}.
+\newblock \showarticletitle{Runge-Kutta methods with minimum error bounds}.
+\newblock \bibinfo{journal}{{\em Mathematics of computation\/}}
+  \bibinfo{volume}{16}, \bibinfo{number}{80} (\bibinfo{year}{1962}),
+  \bibinfo{pages}{431--437}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Stomakhin, Schroeder, Chai, Teran, and
+  Selle}{Stomakhin et~al\mbox{.}}{2013}]%
+        {stomakhin2013}
+\bibfield{author}{\bibinfo{person}{Alexey Stomakhin}, \bibinfo{person}{Craig
+  Schroeder}, \bibinfo{person}{Lawrence Chai}, \bibinfo{person}{Joseph Teran},
+  {and} \bibinfo{person}{Andrew Selle}.} \bibinfo{year}{2013}\natexlab{}.
+\newblock \showarticletitle{A material point method for snow simulation}.
+\newblock \bibinfo{journal}{{\em ACM Transactions on Graphics (TOG)\/}}
+  \bibinfo{volume}{32}, \bibinfo{number}{4} (\bibinfo{year}{2013}),
+  \bibinfo{pages}{102}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Stomakhin, Schroeder, Jiang, Chai, Teran, and
+  Selle}{Stomakhin et~al\mbox{.}}{2014}]%
+        {stomakhin2014}
+\bibfield{author}{\bibinfo{person}{Alexey Stomakhin}, \bibinfo{person}{Craig
+  Schroeder}, \bibinfo{person}{Chenfanfu Jiang}, \bibinfo{person}{Lawrence
+  Chai}, \bibinfo{person}{Joseph Teran}, {and} \bibinfo{person}{Andrew Selle}.}
+  \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{Augmented MPM for phase-change and varied
+  materials}.
+\newblock \bibinfo{journal}{{\em ACM Transactions on Graphics (TOG)\/}}
+  \bibinfo{volume}{33}, \bibinfo{number}{4} (\bibinfo{year}{2014}),
+  \bibinfo{pages}{138}.
+\newblock
+
+
+\bibitem[\protect\citeauthoryear{Zhu and Bridson}{Zhu and Bridson}{2005}]%
+        {zhu2005}
+\bibfield{author}{\bibinfo{person}{Yongning Zhu} {and} \bibinfo{person}{Robert
+  Bridson}.} \bibinfo{year}{2005}\natexlab{}.
+\newblock \showarticletitle{Animating sand as a fluid}.
+\newblock \bibinfo{journal}{{\em ACM Transactions on Graphics (TOG)\/}}
+  \bibinfo{volume}{24}, \bibinfo{number}{3} (\bibinfo{year}{2005}),
+  \bibinfo{pages}{965--972}.
+\newblock
+
+
+\end{thebibliography}

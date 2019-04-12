@@ -51,6 +51,7 @@ private:
   void _updatePressureField();
   void _gridToParticleTransfer();
   void _advectParticles();
+  void _saveVelocityField();
   // functions that setup the inputs to the operator classes
   void _setupParticleToGridInputs();
   void _setupPressureProjectionInputs();

@@ -105,6 +105,8 @@ double Sim::maxParticleSpeed() {
 // ##        ##     ## ####    ###    ##     ##    ##    ########
 
 void Sim::_init() {
+  assert(!_isInitialized);
+  
   // initializes the particles
   // by this time the _materialField should be set with the initial fluid conditions
   _particles = new Particles(_materialField);
@@ -219,6 +221,13 @@ void Sim::_advectParticles() {
   // make sure to cleanup
   delete _particleAdvector;
   delete _gridToParticle;
+}
+
+void Sim::_saveVelocityField() {
+  // SAVE VELOCITY FIELD INTO THE OLD VELOCITY CLASS
+  //_velocityFieldOld.setU(_velocityField.U());
+  //_velocityFieldOld.setV(_velocityField.V());
+  _velocityFieldOld->copyInData(_velocityField);
 }
 
 void Sim::_setupPressureProjectionInputs() {

@@ -5,6 +5,7 @@
 //==============================================================================
 //#define LOG_QUIET
 #define LOG_PARTICLE_ADVECTION
+#define LOG_SAVE_PNG
 
 //==============================================================================
 //------------------- Particle-To-Grid Kernels ---------------------------------
@@ -20,7 +21,7 @@
 //#define INTERPOLATE_BICUBIC   // unimplemented
 
 // PIC/FLIP constant (0 = FLIP, 1 = PIC)
-#define PIC_FLIP_ALPHA 0.0
+#define PIC_FLIP_ALPHA 0.1
 
 //==============================================================================
 //------------------- Particle Advection Scheme --------------------------------
